@@ -32,7 +32,7 @@ end
 
 -------------------- Register game event handlers ---------------------------
 function RaidSetup_OnLoad()
-    RaidSetupFrame:RegisterEvent("ADDON_LOADED")
+  RaidSetupFrame:RegisterEvent("ADDON_LOADED")
 end
 
 -------------------- Event Handler ----------------------
