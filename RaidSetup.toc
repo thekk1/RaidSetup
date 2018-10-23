@@ -1,11 +1,14 @@
 ## Interface: 11200
 ## Title: RaidSetup
-## Notes: Automatic Raid Setup
-## Version: 0.1
+## Title-deDE: RaidSetup
 ## Author: thekk
+## Version: 0.1
+## Notes: Automatic Raid Setup
+## Notes-deDE: Automatic Raid Setup
 ## eMail: thekk@gmx.de
-## DefaultState: enabled
-## SavedVariables:
+## DefaultState: Enabled
+## LoadOnDemand: 0
+## SavedVariables: RS_Players, RS_SetupDB
 Localization.de.lua
 Players.lua
 BossConfig.lua
