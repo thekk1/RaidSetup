@@ -67,7 +67,7 @@ UI.xsd">
                     </OnShow>
                 </Scripts>
             </Button>
-            <Button name="$parent_Options" inherits="OptionsButtonTemplate" text="Update">
+            <Button name="$parent_Update" inherits="OptionsButtonTemplate" text="Update">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
                         <Offset>
@@ -78,7 +78,7 @@ UI.xsd">
                 <Scripts>
                     <OnClick>
                             -- AtlasLootOptions_Toggle();
-                            RaidSetup_OnUpdate()
+                            UpdateRaid()
                     </OnClick>
                     <OnShow>
                             this:SetFrameLevel( (this:GetParent()):GetFrameLevel() + 1 );

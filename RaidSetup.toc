@@ -8,7 +8,7 @@
 ## eMail: thekk@gmx.de
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
-## SavedVariables: RS_Players, RS_SetupDB
+## SavedVariables: RS_PlayerDB, RS_SetupDB
 Localization.de.lua
 Players.lua
 BossConfig.lua

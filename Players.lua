@@ -2,11 +2,11 @@
 -- by thekk
 -- 19.10.2018
 
-RS_Players = {
+RS_PlayerDB = {
 	["Thekk"] = {
-		Class = "Warrior", Role = "MeleeDD"
+		"Krieger", "Melee"
 	},
 	["Emalya"] = {
-		Class = "Warrior", Role = "Tank"
+		"Krieger", "Tank"
 	},
 }

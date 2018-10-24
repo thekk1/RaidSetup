@@ -5,4 +5,8 @@
 if (GetLocale() == "deDE") then
 -- Bindings
 	NO_TABLE			= "Keine Tabelle"
+	HEAL				= "Heiler"
+	TANK				= "Tank"
+	RANGE				= "Range"
+	MELEE				= "Melee"
 end
