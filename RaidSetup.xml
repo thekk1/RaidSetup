@@ -8,6 +8,42 @@ UI.xsd">
 	<!-- Scripts -->
 	<Script file="RaidSetup.lua"/>
 
+    <!-- Templates -->
+    <Button name="RaidSetup_GroupDropDownTemplateButton" inherits="UIDropDownMenuTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="128" y="16"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                <Offset>
+                    <AbsDimension x="0" y="-20"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Scripts>
+            <OnShow>
+                    RS_UpdateButton(this:GetID())
+            </OnShow>
+        </Scripts>
+    </Button>
+
+    <Frame name="RaidSetup_GroupDropDownTemplate" virtual="true">
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                <Offset>
+                    <AbsDimension x="60" y="-60"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Frames>
+            <Button name="$parent_Nr1" inherits="RaidSetup_GroupDropDownTemplateButton"/>
+            <Button name="$parent_Nr2" inherits="RaidSetup_GroupDropDownTemplateButton"/>
+            <Button name="$parent_Nr3" inherits="RaidSetup_GroupDropDownTemplateButton"/>
+            <Button name="$parent_Nr4" inherits="RaidSetup_GroupDropDownTemplateButton"/>
+            <Button name="$parent_Nr5" inherits="RaidSetup_GroupDropDownTemplateButton"/>
+        </Frames>
+    </Frame>
+
 	<!-- My AddOn Frames -->
     <Frame name="RaidSetupFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
         <Size>
@@ -50,6 +86,7 @@ UI.xsd">
             </EdgeSize>
         </Backdrop>
         <Frames>
+            <Frame name="$parent_Grp1" inherits="RaidSetup_GroupDropDownTemplate"/>
             <Button name="$parent_CloseButton" inherits="UIPanelCloseButton">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
