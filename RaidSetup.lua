@@ -15,16 +15,38 @@
 
 ------------------------ Variablen --------------------------
 currentGroup={}
+_classColor = {	PALADIN="|cffF58CBA",PRIEST="|cffffffff",DRUID="|cffFF7D0A",WARRIOR="|cffC79C6E",
+		ROUGE="|cffFFF569",MAGE="|cff40C7EB",WARLOCK="|cff8787ED",HUNTER="|cffABD473",SHAMAN="|cff0070DE" }
 ------------------------ Variablen --------------------------
 
 -------------------- help functions -----------------------
 local function print(msg)
-    DEFAULT_CHAT_FRAME:AddMessage("|cffcccc33INFO: |cffffff55" .. ( msg or "nil" ))
+    DEFAULT_CHAT_FRAME:AddMessage("|cffcccc33INFO: |cffffff55" .. ( tostring(msg) or "nil" ))
 end
 
---local function Answer(msg)
---  SendChatMessage(msg, 'WHISPER', GetDefaultLanguage'player', ChatEdit_GetLastTellTarget(ChatFrameEditBox))
---end
+local function ClassColor(value, classEN)
+    if type(value) == "table" then
+      _table = _table .. " " .. formatting
+      _table = _table .. Tparse(value, indent+1)
+    elseif type(value) == 'boolean' then
+      _table = _table .. " " .. formatting .. tostring(value)
+    else
+      _table = _table .. " " .. formatting .. value
+    end
+end
+
+local function GetClassRole(ClassEN)
+    if(ClassEN == "PALADIN") then return HEAL
+    elseif(ClassEN == "PRIEST") then return HEAL
+    elseif(ClassEN == "DRUID") then return HEAL
+    elseif(ClassEN == "WARRIOR") then return TANK
+    elseif(ClassEN == "ROUGE") then return MELEE
+    elseif(ClassEN == "MAGE") then return RANGE
+    elseif(ClassEN == "WARLOCK") then return RANGE
+    elseif(ClassEN == "HUNTER") then return RANGE
+    elseif(ClassEN == "SHAMAN") then return HEAL
+    end
+end
 
 function Tparse(tbl, indent)
   if (type(tbl) ~= "table") then return NO_TABLE end
@@ -42,26 +64,6 @@ function Tparse(tbl, indent)
     end
   end
   return _table .. "\n"
-end
-
-local function GetClassRole(ClassEN)
-    if(ClassEN == "PALADIN") then
-        return HEAL
-    elseif(ClassEN == "PRIEST") then
-        return HEAL
-    elseif(ClassEN == "DRUID") then
-        return HEAL
-    elseif(ClassEN == "WARRIOR") then
-        return TANK
-    elseif(ClassEN == "ROUGE") then
-        return MELEE
-    elseif(ClassEN == "MAGE") then
-        return RANGE
-    elseif(ClassEN == "WARLOCK") then
-        return RANGE
-    elseif(ClassEN == "HUNTER") then
-        return RANGE
-    end
 end
 
 local function UpdateDB()
