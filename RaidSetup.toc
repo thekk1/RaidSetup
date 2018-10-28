@@ -10,7 +10,5 @@
 ## LoadOnDemand: 0
 ## SavedVariables: RS_PlayerDB, RS_SetupDB
 Localization.de.lua
-Players.lua
-BossConfig.lua
 RaidSetup.lua
 RaidSetup.xml

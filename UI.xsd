@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Sam Lantinga (Blizzard Entertainment) -->
-<xs:schema targetNamespace="http://www.blizzard.com/wow/ui/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/" xmlns:ui="http://www.blizzard.com/wow/ui/" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Sam Lantinga (Blizzard Entertainment) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/" xmlns:ui="http://www.blizzard.com/wow/ui/" targetNamespace="http://www.blizzard.com/wow/ui/" elementFormDefault="qualified">
 	<xs:simpleType name="FRAMEPOINT">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="TOPLEFT"/>
@@ -42,6 +42,7 @@
 			<xs:enumeration value="BLEND"/>
 			<xs:enumeration value="ALPHAKEY"/>
 			<xs:enumeration value="ADD"/>
+			<xs:enumeration value="MOD"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="OUTLINETYPE">
@@ -88,10 +89,11 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:complexType name="Value">
-		<xs:choice>
+		<xs:choice minOccurs="0">
 			<xs:element ref="AbsValue"/>
 			<xs:element ref="RelValue"/>
 		</xs:choice>
+		<xs:attribute name="val" type="xs:int" use="optional"/>
 	</xs:complexType>
 	<xs:element name="AbsDimension">
 		<xs:complexType>
@@ -106,10 +108,12 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:complexType name="Dimension">
-		<xs:choice>
+		<xs:choice minOccurs="0">
 			<xs:element ref="AbsDimension"/>
 			<xs:element ref="RelDimension"/>
 		</xs:choice>
+		<xs:attribute name="x" type="xs:int" use="optional"/>
+		<xs:attribute name="y" type="xs:int" use="optional"/>
 	</xs:complexType>
 	<xs:element name="AbsInset">
 		<xs:complexType>
@@ -128,10 +132,14 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:complexType name="Inset">
-		<xs:choice>
+		<xs:choice minOccurs="0">
 			<xs:element ref="AbsInset"/>
 			<xs:element ref="RelInset"/>
 		</xs:choice>
+		<xs:attribute name="left" type="xs:int" use="optional"/>
+		<xs:attribute name="right" type="xs:int" use="optional"/>
+		<xs:attribute name="top" type="xs:int" use="optional"/>
+		<xs:attribute name="bottom" type="xs:int" use="optional"/>
 	</xs:complexType>
 	<xs:simpleType name="ColorFloat">
 		<xs:restriction base="xs:float">
@@ -144,6 +152,14 @@
 		<xs:attribute name="g" type="ColorFloat" use="required"/>
 		<xs:attribute name="b" type="ColorFloat" use="required"/>
 		<xs:attribute name="a" type="ColorFloat" default="1.0"/>
+	</xs:complexType>
+	<xs:complexType name="ShadowType">
+		<xs:sequence minOccurs="0">
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="Color" type="ColorType"/>
+				<xs:element name="Offset" type="Dimension"/>
+			</xs:choice>
+		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="GradientType">
 		<xs:sequence>
@@ -198,9 +214,37 @@
 				<xs:element name="OnMovieFinished" type="xs:string"/>
 				<xs:element name="OnMovieShowSubtitle" type="xs:string"/>
 				<xs:element name="OnMovieHideSubtitle" type="xs:string"/>
+				<xs:element name="OnTooltipSetDefaultAnchor" type="xs:string"/>
+				<xs:element name="OnTooltipCleared" type="xs:string"/>
+				<xs:element name="OnTooltipAddMoney" type="xs:string"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="FontType">
+		<xs:sequence minOccurs="0">
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="FontHeight" type="Value"/>
+				<xs:element name="Color" type="ColorType"/>
+				<xs:element name="Shadow" type="ShadowType"/>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="inherits" type="xs:string"/>
+		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
+		<xs:attribute name="font" type="xs:string"/>
+		<xs:attribute name="spacing" type="xs:float" default="0"/>
+		<xs:attribute name="outline" type="OUTLINETYPE" default="NONE"/>
+		<xs:attribute name="monochrome" type="xs:boolean" default="false"/>
+		<xs:attribute name="justifyV" type="JUSTIFYVTYPE" default="MIDDLE"/>
+		<xs:attribute name="justifyH" type="JUSTIFYHTYPE" default="CENTER"/>
+	</xs:complexType>
+	<xs:element name="Font">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="FontType"/>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
 	<xs:complexType name="LayoutFrameType">
 		<xs:sequence minOccurs="0">
 			<xs:choice maxOccurs="unbounded">
@@ -236,6 +280,8 @@
 				<xs:element name="BackgroundInsets" type="Inset"/>
 				<xs:element name="TileSize" type="Value"/>
 				<xs:element name="EdgeSize" type="Value"/>
+				<xs:element name="Color" type="ColorType"/>
+				<xs:element name="BorderColor" type="ColorType"/>
 			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="bgFile" type="xs:string"/>
@@ -272,16 +318,7 @@
 					<xs:choice maxOccurs="unbounded">
 						<xs:element name="FontHeight" type="Value"/>
 						<xs:element name="Color" type="ColorType"/>
-						<xs:element name="Shadow">
-							<xs:complexType>
-								<xs:sequence minOccurs="0">
-									<xs:choice maxOccurs="unbounded">
-										<xs:element name="Color" type="ColorType"/>
-										<xs:element name="Offset" type="Dimension"/>
-									</xs:choice>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
+						<xs:element name="Shadow" type="ShadowType"/>
 					</xs:choice>
 				</xs:sequence>
 				<xs:attribute name="font" type="xs:string"/>
@@ -359,6 +396,7 @@
 				<xs:attribute name="id" type="xs:int" default="0"/>
 				<xs:attribute name="enableMouse" type="xs:boolean" default="false"/>
 				<xs:attribute name="enableKeyboard" type="xs:boolean" default="false"/>
+				<xs:attribute name="clampedToScreen" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -372,9 +410,13 @@
 						<xs:element name="PushedTexture" type="ui:TextureType"/>
 						<xs:element name="DisabledTexture" type="ui:TextureType"/>
 						<xs:element name="HighlightTexture" type="ui:TextureType"/>
-						<xs:element name="NormalText" type="FontStringType"/>
-						<xs:element name="HighlightText" type="FontStringType"/>
-						<xs:element name="DisabledText" type="FontStringType"/>
+						<xs:element name="ButtonText" type="FontStringType"/>
+						<xs:element name="NormalFont" type="FontType"/>
+						<xs:element name="HighlightFont" type="FontType"/>
+						<xs:element name="DisabledFont" type="FontType"/>
+						<xs:element name="NormalColor" type="ColorType"/>
+						<xs:element name="HighlightColor" type="ColorType"/>
+						<xs:element name="DisabledColor" type="ColorType"/>
 						<xs:element name="PushedTextOffset" type="Dimension"/>
 					</xs:choice>
 				</xs:sequence>
@@ -410,6 +452,7 @@
 				<xs:attribute name="minValue" type="xs:float"/>
 				<xs:attribute name="maxValue" type="xs:float"/>
 				<xs:attribute name="defaultValue" type="xs:float"/>
+				<xs:attribute name="orientation" type="ui:ORIENTATION" default="HORIZONTAL"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -442,6 +485,7 @@
 						<xs:element name="TextInsets" type="Inset"/>
 					</xs:choice>
 				</xs:sequence>
+				<xs:attribute name="font" type="xs:string"/>
 				<xs:attribute name="letters" type="xs:int" default="0"/>
 				<xs:attribute name="blinkSpeed" type="xs:float" default="0.5"/>
 				<xs:attribute name="numeric" type="xs:boolean" default="false"/>
@@ -491,6 +535,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Model" type="ModelType" substitutionGroup="ui:Frame"/>
+	<xs:element name="ModelFFX" type="ModelType" substitutionGroup="ui:Frame"/>
 	<xs:complexType name="SimpleHTMLType">
 		<xs:complexContent>
 			<xs:extension base="ui:FrameType">
@@ -504,7 +549,9 @@
 						</xs:choice>
 					</xs:sequence>
 				</xs:sequence>
+				<xs:attribute name="font" type="xs:string"/>
 				<xs:attribute name="file" type="xs:string"/>
+				<xs:attribute name="hyperlinkFormat" type="xs:string" default="|H%s|h%s|h"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -518,7 +565,10 @@
 						<xs:element name="TextInsets" type="Inset"/>
 					</xs:choice>
 				</xs:sequence>
+				<xs:attribute name="font" type="xs:string"/>
+				<xs:attribute name="fade" type="xs:boolean" default="true"/>
 				<xs:attribute name="fadeDuration" type="xs:float" default="3.0"/>
+				<xs:attribute name="displayDuration" type="xs:float" default="10.0"/>
 				<xs:attribute name="insertMode" type="INSERTMODE" default="BOTTOM"/>
 			</xs:extension>
 		</xs:complexContent>
@@ -533,6 +583,7 @@
 						<xs:element name="TextInsets" type="Inset"/>
 					</xs:choice>
 				</xs:sequence>
+				<xs:attribute name="font" type="xs:string"/>
 				<xs:attribute name="fade" type="xs:boolean" default="true"/>
 				<xs:attribute name="fadeDuration" type="xs:float" default="3.0"/>
 				<xs:attribute name="displayDuration" type="xs:float" default="10.0"/>
@@ -574,26 +625,80 @@
 	<xs:element name="Ui">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="Include" minOccurs="0" maxOccurs="unbounded">
-					<xs:complexType>
-						<xs:simpleContent>
-							<xs:extension base="xs:string">
-								<xs:attribute name="file" type="xs:string" use="required"/>
-							</xs:extension>
-						</xs:simpleContent>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="Script" minOccurs="0" maxOccurs="unbounded">
-					<xs:complexType>
-						<xs:simpleContent>
-							<xs:extension base="xs:string">
-								<xs:attribute name="file" type="xs:string" use="optional"/>
-							</xs:extension>
-						</xs:simpleContent>
-					</xs:complexType>
-				</xs:element>
-				<xs:element ref="LayoutFrame" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element name="Include" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:string">
+									<xs:attribute name="file" type="xs:string" use="required"/>
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Script" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:string">
+									<xs:attribute name="file" type="xs:string" use="optional"/>
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+					<xs:element ref="Font" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="LayoutFrame" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:complexType name="WorldFrameType">
+		<xs:complexContent>
+			<xs:extension base="FrameType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="WorldFrame" type="WorldFrameType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="GameTooltipType">
+		<xs:complexContent>
+			<xs:extension base="FrameType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GameTooltip" type="GameTooltipType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="MinimapType">
+		<xs:complexContent>
+			<xs:extension base="FrameType">
+				<xs:attribute name="minimapArrowModel" type="xs:string"/>
+				<xs:attribute name="minimapPlayerModel" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Minimap" type="MinimapType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="PlayerModelType">
+		<xs:complexContent>
+			<xs:extension base="ModelType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="PlayerModel" type="PlayerModelType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="DressUpModelType">
+		<xs:complexContent>
+			<xs:extension base="PlayerModelType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DressUpModel" type="DressUpModelType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="TabardModelType">
+		<xs:complexContent>
+			<xs:extension base="PlayerModelType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="TabardModel" type="TabardModelType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="LootButtonType">
+		<xs:complexContent>
+			<xs:extension base="ButtonType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="LootButton" type="LootButtonType" substitutionGroup="ui:Frame"/>
+	<xs:complexType name="TaxiRouteFrameType">
+		<xs:complexContent>
+			<xs:extension base="FrameType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="TaxiRouteFrame" type="TaxiRouteFrameType" substitutionGroup="ui:Frame"/>
 </xs:schema>

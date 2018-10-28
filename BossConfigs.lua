@@ -5,15 +5,7 @@
 RS_SetupDB = {
 	Naxxramas = {
 		Four_HM = {
-			Grp1={"Tank","Tank","Paladin","Paladin","Warlock"},
-			Grp2={"Tank","Tank","Paladin","Paladin","Warlock"},
-			Grp3={"Tank","Tank","Paladin","Paladin","Warlock"},
-			Grp4={"Tank","Tank","Paladin","Paladin","Warlock"},
-			Grp5={"MeleeDD","MeleeDD","MeleeDD","Hunter","Heal"},
-			Grp6={"MeleeDD","MeleeDD","MeleeDD","Hunter","Heal"},
-			Grp7={"MeleeDD","MeleeDD","MeleeDD","Hunter","Heal"},
-			Grp8={"MeleeDD","RangeDD","RangeDD","Hunter","Heal"},
-			Tanks= {"Tank1","Tank2","Tank3","Tank4","Tank5","Tank6","Tank7","Tank8"},
+			GroupSetup={},
 			TankTargets={["Thane Korth'azz"]={"1","2"},
 				["Lady Blaumeux"]={"3","4"},
 				["Highlord Mograine"]={"5","6"},
@@ -29,9 +21,7 @@ RS_SetupDB = {
 				{"5","6"},
 				{"7","8"},
 				{"7","8"}
-			},
-			MeleeDD="10",
-			RangeDD="10"
+			}
 		},
 	},
 }
