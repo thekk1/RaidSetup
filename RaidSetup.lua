@@ -23,12 +23,12 @@ local groupSetup={}
 
 local classes={".ANY","----","PALADIN","PRIEST","DRUID","WARRIOR","ROGUE","MAGE","WARLOCK","HUNTER" }
 if (UnitFactionGroup("player") == "Horde") then table.insert(classes,"SHAMAN") end
-local roles={".ANY","----","TANK","HEAL","MELEE","RANGE","----",".CLOSED"}
+local roles={".ANY","----","TANK","HEAL","MEELE","RANGE","----",".CLOSED"}
 ------------------------ Variablen --------------------------
 
 -------------------- help functions -----------------------
 local function print(msg)
-    DEFAULT_CHAT_FRAME:AddMessage("|cffcccc33INFO: |cffffff55" .. ( tostring(msg) or "nil" ))
+    DEFAULT_CHAT_FRAME:AddMessage("|cffcccc33RaidSetup: |cffffff55" .. ( tostring(msg) or "nil" ))
 end
 
 local function GetNamesByRole(role)
@@ -118,7 +118,7 @@ local function GetClassRole(name)
     elseif(ClassEN == "PRIEST") then return "HEAL"
     elseif(ClassEN == "DRUID") then return "HEAL"
     elseif(ClassEN == "WARRIOR") then return "TANK"
-    elseif(ClassEN == "ROGUE") then return "MELEE"
+    elseif(ClassEN == "ROGUE") then return "MEELE"
     elseif(ClassEN == "MAGE") then return "RANGE"
     elseif(ClassEN == "WARLOCK") then return "RANGE"
     elseif(ClassEN == "HUNTER") then return "RANGE"
@@ -186,17 +186,21 @@ function SaveSetup(Instance, Boss)
 end
 
 function LoadSetup(Instance, Boss)
-    groupSetup = RS_SetupDB[Instance][Boss].GroupSetup
+    UIDropDownMenu_SetSelectedValue(getglobal("RaidSetupFrame_Instance"), Instance)
+    UIDropDownMenu_SetSelectedValue(getglobal("RaidSetupFrame_Boss"), Boss)
+    groupSetup = assert(RS_SetupDB[Instance][Boss].GroupSetup, "No Setup for: " .. Instance .. "->"..Boss)
     for grp=1,8,1 do
         for player=1,5,1 do
             for set=1,3,1 do
-                local button = getglobal("RaidSetupFrame_Grp"..grp.."_Btn"..player..set)
-                UIDropDownMenu_SetSelectedValue(button, groupSetup[grp][player][set])
+                local button = assert(getglobal("RaidSetupFrame_Grp"..grp.."_Btn"..player..set), "Can't find: RaidSetupFrame_Grp"..grp.."_Btn"..player..set)
+                if UIDropDownMenu_GetSelectedValue(button) ~= groupSetup[grp][player][set] then
+                    UIDropDownMenu_SetSelectedValue(button, groupSetup[grp][player][set])
+                    button:Hide()
+                    button:Show()
+                end
             end
         end
     end
-    RaidSetupFrame:Hide()
-    RaidSetupFrame:Show()
 end
 
 local function UpdateSetup()
@@ -210,6 +214,44 @@ local function UpdateSetup()
                 table.insert(groupSetup[grp][player], set, button.selectedValue)
             end
         end
+    end
+end
+
+function RS_InstanceDropDown_Init()
+    local info
+    local frame = getglobal(string.gsub(this:GetName() ,"Button",""))
+    local list = {}
+    for k in pairs(RS_SetupDB) do table.insert(list, k) if table.getn(list) >= 32 then break end end
+    table.sort(list)
+    for _,v in pairs(list) do
+        info = {
+            justifyH="LEFT",
+            text = "|cffffffff"..v,
+            func = RS_InstanceDropDown_OnClick,
+            arg1=frame,
+            value=v
+        };
+        if(string.find(v,"%p%p%p%p"))then info.notClickable="1" end
+        UIDropDownMenu_AddButton(info)
+    end
+end
+
+function RS_BossDropDown_Init()
+    local info
+    local frame = getglobal(string.gsub(this:GetName() ,"Button",""))
+    local list = {}
+    for k in pairs(RS_SetupDB[getglobal("RaidSetupFrame_Instance").selectedValue]) do table.insert(list, k) if table.getn(list) >= 32 then break end end
+    table.sort(list)
+    for _,v in pairs(list) do
+        info = {
+            justifyH="LEFT",
+            text = "|cffffffff"..v,
+            func = RS_BossDropDown_OnClick,
+            arg1=frame,
+            value=v
+        };
+        if(string.find(v,"%p%p%p%p"))then info.notClickable="1" end
+        UIDropDownMenu_AddButton(info)
     end
 end
 
@@ -236,79 +278,48 @@ local function GetTypeList(arg1)
     end
 end
 
-function RS_InstanceDropDown_Init()
-    local info;
-    local frame = getglobal(string.gsub(this:GetName() ,"Button",""));
-    local list = {"Naxxramas"}
-    for _,v in pairs(list) do
-        info = {
-            justifyH="LEFT";
-            text = "|cffffffff"..v;
-            func = RS_InstanceDropDown_OnClick;
-            arg1=frame;
-            value=v
-        };
-        if(v=="----")then info.notClickable="1" end;
-        UIDropDownMenu_AddButton(info);
-    end
-    --print("Init(): "..getglobal(string.gsub(this:GetName() ,"Button","")):GetName())
-end
-
-function RS_BossDropDown_Init()
-    local info;
-    local frame = getglobal(string.gsub(this:GetName() ,"Button",""));
-    local list = {"---- Spider_Wing","Anub_Rekhan","Grand_Widow_Faerlina","Maexxna","---- Plague_Wing","Noth_the_Plaguebringer","Haigen_the_Unclean","Loatheb","---- Deathknight_Wing","Instructor_Razuvious","Gothik_the_Harvester","Four_HM","---- Abomination_Wing","Patchwerk","Grobbulus","Gluth","Thaddius","---- Frostwyrm_Lair","Sapphiron","Kel_Thuzad"}
-    for _,v in pairs(list) do
-        info = {
-            justifyH="LEFT";
-            text = "|cffffffff"..v;
-            func = RS_BossDropDown_OnClick;
-            arg1=frame;
-            value=v
-        };
-        if(string.find(v,"%p%p%p%p"))then print(v) info.notClickable="1" end;
-        UIDropDownMenu_AddButton(info);
-    end
-    --print("Init(): "..getglobal(string.gsub(this:GetName() ,"Button","")):GetName())
-end
-
 function RS_PlayerDropDown_Init()
-    local info;
-    local frame = getglobal(string.gsub(this:GetName() ,"Button",""));
+    local info
+    local frame = getglobal(string.gsub(this:GetName() ,"Button",""))
     local list, method = GetTypeList(frame)
     for _,v in pairs(list) do
         info = {
-            justifyH="LEFT";
-            text = GetClassColor(method(v))..v;
-            func = RS_PlayerDropDown_OnClick;
-            arg1=frame;
+            justifyH="LEFT",
+            text = GetClassColor(method(v))..v,
+            func = RS_PlayerDropDown_OnClick,
+            arg1=frame,
             value=v
         };
-        if(v=="----")then info.notClickable="1" end;
-        UIDropDownMenu_AddButton(info);
+        if(string.find(v,"%p%p%p%p"))then info.notClickable="1" end
+        UIDropDownMenu_AddButton(info)
     end
-    --print("Init(): "..getglobal(string.gsub(this:GetName() ,"Button","")):GetName())
 end
 
 
-function RS_PlayerDropDown_OnShow()
+function RS_DropDown_OnShow()
     if string.find(this:GetName(), "Instance") then
         UIDropDownMenu_Initialize(this, RS_InstanceDropDown_Init)
-        UIDropDownMenu_SetSelectedID(this, 1)
+        UIDropDownMenu_SetSelectedValue(this, this.selectedValue)
     elseif string.find(this:GetName(), "Boss") then
         UIDropDownMenu_Initialize(this, RS_BossDropDown_Init)
-        UIDropDownMenu_SetSelectedID(this, 2)
+        UIDropDownMenu_SetSelectedValue(this, this.selectedValue)
     else
         UIDropDownMenu_Initialize(this, RS_PlayerDropDown_Init)
         UIDropDownMenu_SetSelectedValue(this, this.selectedValue)
     end
 end
 
-function RS_InstanceDropDown_OnClick(button) -- button = RaidSetupFrame_GrpX_BtnYZ
+local function GetValue(value) for k,v in pairs(RS_SetupDB[value]) do return k end end
+
+function RS_InstanceDropDown_OnClick(button) -- button = RaidSetupFrame_Instance
     UIDropDownMenu_SetSelectedValue(button, this.value) -- this = DropDownList1Button[level]
+    local bossButton = getglobal("RaidSetupFrame_Boss")
+    UIDropDownMenu_SetSelectedValue(bossButton, GetValue(this.value))
+    bossButton:Hide()
+    bossButton:Show()
 end
 
-function RS_BossDropDown_OnClick(button) -- button = RaidSetupFrame_GrpX_BtnYZ
+function RS_BossDropDown_OnClick(button) -- button = RaidSetupFrame_Boss
     UIDropDownMenu_SetSelectedValue(button, this.value) -- this = DropDownList1Button[level]
 end
 
@@ -318,8 +329,6 @@ function RS_PlayerDropDown_OnClick(button) -- button = RaidSetupFrame_GrpX_BtnYZ
     if(this.value == ".CLOSED") then
         local btn2 = getglobal(string.gsub(button:GetName(), "(%d)(.+)(%d)(%d)", "%1%2%32"))
         local btn3 = getglobal(string.gsub(button:GetName(), "(%d)(.+)(%d)(%d)", "%1%2%33"))
-        --UIDropDownMenu_ClearAll(btn2)
-        --UIDropDownMenu_ClearAll(btn2)
         UIDropDownMenu_SetSelectedValue(btn2, button.selectedValue)
         UIDropDownMenu_SetSelectedValue(btn3, button.selectedValue)
     end
@@ -344,7 +353,7 @@ end
 function RaidSetup_OnEvent(event)
 	if (event == "ADDON_LOADED") and (arg1 == "RaidSetup") then
 		print("RaidSetup loaded")
-        LoadSetup("Naxxramas", "Four_HM")
+        LoadSetup("Naxxramas", "Maexxna")
     end
     if (event == "RAID_ROSTER_UPDATE") then
         UpdateRaid()

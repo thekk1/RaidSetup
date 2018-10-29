@@ -2,13 +2,14 @@
 UI.xsd">
 	<!-- Localization -->
 	<Script file="Localization.de.lua"/>
+    <Script file="BossConfigs.lua"/>
 	<!-- Scripts -->
 	<Script file="RaidSetup.lua"/>
 
     <!-- Templates -->
     <Button name="GroupDropDownTemplate" inherits="UIDropDownMenuTemplate" clampedToScreen="true" virtual="true">
         <Size><AbsDimension x="128" y="16"/></Size>
-        <Scripts><OnShow> RS_PlayerDropDown_OnShow() </OnShow></Scripts>
+        <Scripts><OnShow> RS_DropDown_OnShow() </OnShow></Scripts>
     </Button>
 
     <Frame name="GroupFrameTemplate" clampedToScreen="true" virtual="true">
@@ -178,12 +179,10 @@ UI.xsd">
             <Button name="$parent_Instance" inherits="GroupDropDownTemplate" text="Select Instance">
                 <Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
                     <Offset><AbsDimension x="-5" y="-15"/></Offset></Anchor></Anchors>
-                <Scripts><OnShow> RS_PlayerDropDown_OnShow() </OnShow></Scripts>
             </Button>
             <Button name="$parent_Boss" inherits="GroupDropDownTemplate" text="Select Boss">
                 <Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
                     <Offset><AbsDimension x="125" y="-15"/></Offset></Anchor></Anchors>
-                <Scripts><OnShow> RS_PlayerDropDown_OnShow() </OnShow></Scripts>
             </Button>
             <Button name="$parent_Save" inherits="OptionsButtonTemplate" text="Save Setup">
                 <Anchors>
