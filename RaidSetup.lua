@@ -257,7 +257,7 @@ end
 function RS_BossDropDown_Init()
     local info;
     local frame = getglobal(string.gsub(this:GetName() ,"Button",""));
-    local list = {"Four_HM", "Maexxna"}
+    local list = {"---- Spider_Wing","Anub_Rekhan","Grand_Widow_Faerlina","Maexxna","---- Plague_Wing","Noth_the_Plaguebringer","Haigen_the_Unclean","Loatheb","---- Deathknight_Wing","Instructor_Razuvious","Gothik_the_Harvester","Four_HM","---- Abomination_Wing","Patchwerk","Grobbulus","Gluth","Thaddius,""---- Frostwyrm_Lair","Sapphiron","Kel_Thuzad"}
     for _,v in pairs(list) do
         info = {
             justifyH="LEFT";
@@ -266,7 +266,7 @@ function RS_BossDropDown_Init()
             arg1=frame;
             value=v
         };
-        if(v=="----")then info.notClickable="1" end;
+        if(string.find(v,"----"))then info.notClickable="1" end;
         UIDropDownMenu_AddButton(info);
     end
     --print("Init(): "..getglobal(string.gsub(this:GetName() ,"Button","")):GetName())
