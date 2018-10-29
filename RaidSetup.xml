@@ -228,6 +228,7 @@ UI.xsd">
                 </Anchors>
                 <Scripts>
                     <OnClick>
+                            assert(nil, "Function not yet implemented")
                             --UpdateRaid()
                     </OnClick>
                     <OnShow>

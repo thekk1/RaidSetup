@@ -588,3 +588,485 @@ RS_SetupDB = {
 		["Ysondre"] = {}
 	}
 }
+RS_PlayerDB = {
+    ["Dschagannad"] = {
+        [1] = "WARLOCK",
+        [2] = "RANGE",
+    },
+    ["Colinia"] = {
+        [1] = "PRIEST",
+        [2] = "HEAL",
+    },
+    ["Knarfinator"] = {
+        [1] = "PALADIN",
+        [2] = "HEAL",
+    },
+    ["Katharya"] = {
+        [1] = "DRUID",
+        [2] = "HEAL",
+    },
+    ["Ghot"] = {
+        [1] = "WARLOCK",
+        [2] = "RANGE",
+    },
+    ["Gynerva"] = {
+        [1] = "PRIEST",
+        [2] = "HEAL",
+    },
+    ["Tahetes"] = {
+        [1] = "HUNTER",
+        [2] = "RANGE",
+    },
+    ["Thekk"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Kotzibaer"] = {
+        [1] = "PALADIN",
+        [2] = "HEAL",
+    },
+    ["Starship"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Emalya"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Mess"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Oraias"] = {
+        [1] = "PALADIN",
+        [2] = "HEAL",
+    },
+    ["Yulee"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Telle"] = {
+        [1] = "WARLOCK",
+        [2] = "RANGE",
+    },
+    ["Alynis"] = {
+        [1] = "DRUID",
+        [2] = "HEAL",
+    },
+    ["Askarion"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Teefura"] = {
+        [1] = "ROGUE",
+        [2] = "MEELE",
+    },
+    ["Erinyes"] = {
+        [1] = "WARLOCK",
+        [2] = "RANGE",
+    },
+    ["Ashfahla"] = {
+        [1] = "HUNTER",
+        [2] = "RANGE",
+    },
+    ["Gondolin"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Surix"] = {
+        [1] = "ROGUE",
+        [2] = "MEELE",
+    },
+    ["Selaine"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Mariano"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Treutz"] = {
+        [1] = "HUNTER",
+        [2] = "RANGE",
+    },
+    ["Nardia"] = {
+        [1] = "PALADIN",
+        [2] = "HEAL",
+    },
+    ["Amara"] = {
+        [1] = "PRIEST",
+        [2] = "HEAL",
+    },
+    ["Aggrom"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Sternschen"] = {
+        [1] = "ROGUE",
+        [2] = "MEELE",
+    },
+    ["Truupi"] = {
+        [1] = "WARLOCK",
+        [2] = "RANGE",
+    },
+    ["Mayling"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Troopi"] = {
+        [1] = "PRIEST",
+        [2] = "HEAL",
+    },
+    ["Tronica"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Joyy"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Mhyriana"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Astorèth"] = {
+        [1] = "HUNTER",
+        [2] = "RANGE",
+    },
+    ["Ceanereon"] = {
+        [1] = "PRIEST",
+        [2] = "HEAL",
+    },
+    ["Odwras"] = {
+        [1] = "DRUID",
+        [2] = "HEAL",
+    },
+    ["Aszencia"] = {
+        [1] = "HUNTER",
+        [2] = "RANGE",
+    },
+    ["Rashock"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Stonecutter"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Exceleror"] = {
+        [1] = "ROGUE",
+        [2] = "MEELE",
+    },
+    ["Eduardkulong"] = {
+        [1] = "PALADIN",
+        [2] = "HEAL",
+    },
+    ["Abidabi"] = {
+        [1] = "ROGUE",
+        [2] = "MEELE",
+    },
+    ["Luiina"] = {
+        [1] = "PALADIN",
+        [2] = "HEAL",
+    },
+    ["Hilana"] = {
+        [1] = "DRUID",
+        [2] = "HEAL",
+    },
+    ["Reginn"] = {
+        [1] = "WARLOCK",
+        [2] = "RANGE",
+    },
+    ["Questbar"] = {
+        [1] = "PALADIN",
+        [2] = "HEAL",
+    },
+    ["Hottstar"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Gently"] = {
+        [1] = "DRUID",
+        [2] = "HEAL",
+    },
+    ["Safim"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Lizzybizzy"] = {
+        [1] = "DRUID",
+        [2] = "HEAL",
+    },
+    ["Szuna"] = {
+        [1] = "ROGUE",
+        [2] = "MEELE",
+    },
+    ["Glonk"] = {
+        [1] = "ROGUE",
+        [2] = "MEELE",
+    },
+    ["Tahlia"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Hekon"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Löffelmann"] = {
+        [1] = "WARLOCK",
+        [2] = "RANGE",
+    },
+    ["Comudus"] = {
+        [1] = "ROGUE",
+        [2] = "MEELE",
+    },
+    ["Gallion"] = {
+        [1] = "HUNTER",
+        [2] = "RANGE",
+    },
+    ["Haumea"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Unforgiving"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Micek"] = {
+        [1] = "PALADIN",
+        [2] = "HEAL",
+    },
+    ["Melderus"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Huhnmampfer"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Wyro"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Lisauro"] = {
+        [1] = "DRUID",
+        [2] = "HEAL",
+    },
+    ["Kiddow"] = {
+        [1] = "ROGUE",
+        [2] = "MEELE",
+    },
+    ["Bowsnarrow"] = {
+        [1] = "HUNTER",
+        [2] = "RANGE",
+    },
+    ["Sazabi"] = {
+        [1] = "DRUID",
+        [2] = "HEAL",
+    },
+    ["Chincheck"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Fio"] = {
+        [1] = "WARLOCK",
+        [2] = "RANGE",
+    },
+    ["Blättli"] = {
+        [1] = "DRUID",
+        [2] = "HEAL",
+    },
+    ["Paladio"] = {
+        [1] = "PALADIN",
+        [2] = "HEAL",
+    },
+    ["Lâdysilviânâ"] = {
+        [1] = "ROGUE",
+        [2] = "MEELE",
+    },
+    ["Saguna"] = {
+        [1] = "DRUID",
+        [2] = "HEAL",
+    },
+    ["Pvpoepen"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Mikaza"] = {
+        [1] = "HUNTER",
+        [2] = "RANGE",
+    },
+    ["Lillz"] = {
+        [1] = "WARLOCK",
+        [2] = "RANGE",
+    },
+    ["Kraider"] = {
+        [1] = "PRIEST",
+        [2] = "HEAL",
+    },
+    ["Verica"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Ataria"] = {
+        [1] = "PALADIN",
+        [2] = "HEAL",
+    },
+    ["Mixus"] = {
+        [1] = "ROGUE",
+        [2] = "MEELE",
+    },
+    ["Larirawiel"] = {
+        [1] = "PRIEST",
+        [2] = "HEAL",
+    },
+    ["Krolm"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Adebryn"] = {
+        [1] = "PRIEST",
+        [2] = "HEAL",
+    },
+    ["Sicariorum"] = {
+        [1] = "ROGUE",
+        [2] = "MEELE",
+    },
+    ["Satystros"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Weltenstern"] = {
+        [1] = "DRUID",
+        [2] = "HEAL",
+    },
+    ["Jessienia"] = {
+        [1] = "PRIEST",
+        [2] = "HEAL",
+    },
+    ["Fluffeluff"] = {
+        [1] = "PRIEST",
+        [2] = "HEAL",
+    },
+    ["Ashija"] = {
+        [1] = "DRUID",
+        [2] = "HEAL",
+    },
+    ["Raveria"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Prophetic"] = {
+        [1] = "PRIEST",
+        [2] = "HEAL",
+    },
+    ["Syris"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Playmow"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Laarry"] = {
+        [1] = "ROGUE",
+        [2] = "MEELE",
+    },
+    ["Vinyahil"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Aschari"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Akuraa"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Cossak"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Deathmoon"] = {
+        [1] = "HUNTER",
+        [2] = "RANGE",
+    },
+    ["Apfelherz"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Kunja"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Sanktuario"] = {
+        [1] = "PRIEST",
+        [2] = "HEAL",
+    },
+    ["Meliamne"] = {
+        [1] = "DRUID",
+        [2] = "HEAL",
+    },
+    ["Möhnchen"] = {
+        [1] = "HUNTER",
+        [2] = "RANGE",
+    },
+    ["Nagaos"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Zarok"] = {
+        [1] = "PALADIN",
+        [2] = "HEAL",
+    },
+    ["Rukachii"] = {
+        [1] = "PALADIN",
+        [2] = "HEAL",
+    },
+    ["Luxia"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Felictas"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Mekarius"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Fassl"] = {
+        [1] = "DRUID",
+        [2] = "HEAL",
+    },
+    ["Linette"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Grandalin"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Raigo"] = {
+        [1] = "WARRIOR",
+        [2] = "TANK",
+    },
+    ["Funken"] = {
+        [1] = "MAGE",
+        [2] = "RANGE",
+    },
+    ["Izrak"] = {
+        [1] = "PRIEST",
+        [2] = "HEAL",
+    },
+    ["Skusinchen"] = {
+        [1] = "ROGUE",
+        [2] = "MEELE",
+    },
+    ["Kyresa"] = {
+        [1] = "WARLOCK",
+        [2] = "RANGE",
+    },
+}
