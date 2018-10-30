@@ -15,9 +15,6 @@
 
 
 ------------------------ Variablen --------------------------
-if not RS_PlayerDB then RS_PlayerDB = {} end
-if not RS_SetupDB then RS_SetupDB = {} end
-
 local currentGroup={}
 local groupSetup={}
 
@@ -60,17 +57,6 @@ local function GetRoleByName(name)
     return nil
 end
 
-local function GetRolesByClass(class)
-    local _tmp = {}
-    for _,v in RS_PlayerDB do
-        if(v[1]==class) then
-            _tmp[v[2]]="1"
-        end
-    end
-    table.sort(_tmp)
-    return _tmp
-end
-
 local function GetClassByName(name)
     if RS_PlayerDB[name] then
         return RS_PlayerDB[name][1]
@@ -92,10 +78,6 @@ local function GetClassesByRole(role)
     return _tmp
 end
 
-local function GetClassByClass(class)
-    return class
-end
-
 local function GetClassColor(name)
     local ClassEN = GetClassByName(name)
     if(ClassEN == ".ANY") then return "|cff00FF00"
@@ -112,18 +94,39 @@ local function GetClassColor(name)
     else return "|cffA5A5A5" end
 end
 
-local function GetClassRole(name)
+local function GetClassRoles(name)
     local ClassEN = GetClassByName(name) or name
-    if(ClassEN == "PALADIN") then return "HEAL"
-    elseif(ClassEN == "PRIEST") then return "HEAL"
-    elseif(ClassEN == "DRUID") then return "HEAL"
-    elseif(ClassEN == "WARRIOR") then return "TANK"
-    elseif(ClassEN == "ROGUE") then return "MEELE"
-    elseif(ClassEN == "MAGE") then return "RANGE"
-    elseif(ClassEN == "WARLOCK") then return "RANGE"
-    elseif(ClassEN == "HUNTER") then return "RANGE"
-    elseif(ClassEN == "SHAMAN") then return "HEAL"
+    if(ClassEN == "PALADIN") then return {"HEAL","TANK","MEELE"}
+    elseif(ClassEN == "PRIEST") then return {"HEAL","RANGE"}
+    elseif(ClassEN == "DRUID") then return {"HEAL","MEELE","RANGE"}
+    elseif(ClassEN == "WARRIOR") then return {"TANK","MEELE"}
+    elseif(ClassEN == "ROGUE") then return {"MEELE"}
+    elseif(ClassEN == "MAGE") then return {"RANGE"}
+    elseif(ClassEN == "WARLOCK") then return {"RANGE"}
+    elseif(ClassEN == "HUNTER") then return {"RANGE"}
+    elseif(ClassEN == "SHAMAN") then return {"HEAL","MEELE","RANGE"}
     else return "" end
+end
+
+local function GetRolesByClass(name)
+    if RS_PlayerDB[name] then
+        return RS_PlayerDB[name][2]
+    end
+    return GetClassRoles(name)
+end
+
+local function GetRoleClasses(role)
+    local list
+    if(role == "HEAL") then list = {".ANY","----","PALADIN","PRIEST","DRUID"}
+        if (UnitFactionGroup("player") == "Horde") then table.insert(list,"SHAMAN") end
+    elseif(role == "TANK") then list = {".ANY","----","WARRIOR","DRUID","PALADIN"}
+    elseif(role == "MEELE") then list = {".ANY","----","ROGUE","WARRIOR","DRUID","PALADIN" }
+        if (UnitFactionGroup("player") == "Horde") then table.insert(list,"SHAMAN") end
+    elseif(role == "RANGE") then list = {".ANY","----","MAGE","WARLOCK","HUNTER","DRUID","PRIEST" }
+        if (UnitFactionGroup("player") == "Horde") then table.insert(list,"SHAMAN") end
+    else assert(nil, "Role does not exists: " .. role)
+    end
+    return list
 end
 
 function Tparse(tbl, indent)
@@ -146,23 +149,11 @@ function Tparse(tbl, indent)
   return _table .. "\n"
 end
 
-local function Tsort(t)
-    local tkeys = {}
-    -- populate the table that holds the keys
-    for k in pairs(t) do table.insert(tkeys, k) end
-    -- sort the keys
-    table.sort(tkeys)
-    -- use the keys to retrieve the values in the sorted order
-    local _table = ""
-    for _, k in ipairs(tkeys) do _table = _table .. GetClassColor(GetClassByName(k)) .. k .. Tparse(t[k]) end
-    return _table
-end
-
 local function UpdateDB()
     currentGroup = {}
     for i=1, GetNumRaidMembers() do
         local name,rank,subgroup,_,class,ClassEN,_,online = GetRaidRosterInfo(i);
-        local role = GetClassRole(ClassEN)
+        local role = GetClassRoles(ClassEN)
         if not (RS_PlayerDB[name]) then
             RS_PlayerDB[name]= {ClassEN,role}
         end
@@ -257,20 +248,41 @@ end
 
 local function GetTypeList(arg1)
     local _,_,grp,_,btn,set = string.find(arg1:GetName(), "(%d)(.+)(%d)(%d)")
-    local _frame = getglobal(string.gsub(arg1:GetName(), "(%d)(.+)(%d)(%d)", "%1%2%31"))
+    local button1 = getglobal(string.gsub(arg1:GetName(), "(%d)(.+)(%d)(%d)", "%1%2%31"))
+    local button2 = getglobal(string.gsub(arg1:GetName(), "(%d)(.+)(%d)(%d)", "%1%2%32"))
+    local button3 = getglobal(string.gsub(arg1:GetName(), "(%d)(.+)(%d)(%d)", "%1%2%33"))
     if(set=="1") then
+        if (button1.selectedValue==".ANY"
+        or button1.selectedValue==".CLOSED") then
+            return roles, GetClassesByRole
+        end
         return roles, GetClassesByRole
     elseif(set=="2") then
-        if (UIDropDownMenu_GetSelectedValue(_frame)==".CLOSED") then
+        if (button1.selectedValue==".CLOSED") then
             return {".CLOSED"}, GetClassByName
         end
-        return classes, GetClassByName
+        if (button1.selectedValue==".ANY") then
+            return classes, GetClassByName
+        end
+        return GetRoleClasses(button1.selectedValue), GetClassByName
     elseif(set=="3") then
-        if (UIDropDownMenu_GetSelectedValue(_frame)==".CLOSED") then
+        if (button1.selectedValue==".CLOSED") then
             return {".CLOSED"}, GetClassByName
         end
         local tkeys = {}
-        for k in pairs(RS_PlayerDB) do table.insert(tkeys, k) if table.getn(tkeys) >= 30 then break end end
+        if (button2.selectedValue==".ANY") then
+            for player in pairs(RS_PlayerDB) do
+                table.insert(tkeys, player)
+                if table.getn(tkeys) >= 30 then break end
+            end
+        else
+            for player,v in pairs(RS_PlayerDB) do
+                if(v[1]==button2.selectedValue) then
+                    table.insert(tkeys, player)
+                end
+                if table.getn(tkeys) >= 30 then break end
+            end
+        end
         table.sort(tkeys)
         table.insert(tkeys,1, ".ANY")
         table.insert(tkeys,2, "----")
@@ -298,10 +310,10 @@ end
 
 function RS_DropDown_OnShow()
     if string.find(this:GetName(), "Instance") then
-        UIDropDownMenu_Initialize(this, RS_InstanceDropDown_Init)
+        UIDropDownMenu_Initialize(this, RS_InstanceDropDown_Init, "MENU")
         UIDropDownMenu_SetSelectedValue(this, this.selectedValue)
     elseif string.find(this:GetName(), "Boss") then
-        UIDropDownMenu_Initialize(this, RS_BossDropDown_Init)
+        UIDropDownMenu_Initialize(this, RS_BossDropDown_Init, "MENU")
         UIDropDownMenu_SetSelectedValue(this, this.selectedValue)
     else
         UIDropDownMenu_Initialize(this, RS_PlayerDropDown_Init)
@@ -326,12 +338,25 @@ end
 function RS_PlayerDropDown_OnClick(button) -- button = RaidSetupFrame_GrpX_BtnYZ
     UIDropDownMenu_SetSelectedValue(button, this.value) -- this = DropDownList1Button[level]
 
-    if(this.value == ".CLOSED") then
-        local btn2 = getglobal(string.gsub(button:GetName(), "(%d)(.+)(%d)(%d)", "%1%2%32"))
-        local btn3 = getglobal(string.gsub(button:GetName(), "(%d)(.+)(%d)(%d)", "%1%2%33"))
-        UIDropDownMenu_SetSelectedValue(btn2, button.selectedValue)
-        UIDropDownMenu_SetSelectedValue(btn3, button.selectedValue)
+    local _,_,grp,_,btn,set = string.find(button:GetName(), "(%d)(.+)(%d)(%d)")
+    local button1 = getglobal(string.gsub(button:GetName(), "(%d)(.+)(%d)(%d)", "%1%2%31"))
+    local button2 = getglobal(string.gsub(button:GetName(), "(%d)(.+)(%d)(%d)", "%1%2%32"))
+    local button3 = getglobal(string.gsub(button:GetName(), "(%d)(.+)(%d)(%d)", "%1%2%33"))
+
+    if( set == "1" ) then
+        if( this.value == ".CLOSED") then
+            UIDropDownMenu_SetSelectedValue(button2, this.value)
+            UIDropDownMenu_SetSelectedValue(button3, this.value)
+        else
+            UIDropDownMenu_SetSelectedValue(button2, ".ANY")
+            UIDropDownMenu_SetSelectedValue(button3, ".ANY")
+        end
     end
+
+    if( set == "2" ) then
+        UIDropDownMenu_SetSelectedValue(button3, ".ANY")
+    end
+
     UpdateSetup()
 end
 
@@ -353,6 +378,8 @@ end
 function RaidSetup_OnEvent(event)
 	if (event == "ADDON_LOADED") and (arg1 == "RaidSetup") then
 		print("RaidSetup loaded")
+        if not RS_PlayerDB then RS_PlayerDB = RS_PlayerDB_Template end
+        if not RS_SetupDB then RS_SetupDB = RS_SetupDB_Template end
         LoadSetup("Naxxramas", "Maexxna")
     end
     if (event == "RAID_ROSTER_UPDATE") then
