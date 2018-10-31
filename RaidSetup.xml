@@ -236,6 +236,25 @@ UI.xsd">
                     </OnShow>
                 </Scripts>
             </Button>
+            <Button name="$parent_ResetDB" inherits="OptionsButtonTemplate" text="Reset DB">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="280" y="-35"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            ResetDB()
+                    </OnClick>
+                    <OnShow>
+                            this:SetFrameLevel( (this:GetParent()):GetFrameLevel() + 1 );
+                    </OnShow>
+                </Scripts>
+            </Button>
+
+
         </Frames>
         <Layers>
             <Layer level="OVERLAY">

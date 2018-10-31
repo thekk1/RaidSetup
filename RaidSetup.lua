@@ -98,7 +98,7 @@ local function GetClassRoles(name)
     local ClassEN = GetClassByName(name) or name
     if(ClassEN == "PALADIN") then return {"HEAL","TANK","MEELE"}
     elseif(ClassEN == "PRIEST") then return {"HEAL","RANGE"}
-    elseif(ClassEN == "DRUID") then return {"HEAL","MEELE","RANGE"}
+    elseif(ClassEN == "DRUID") then return {"HEAL","MEELE","RANGE","TANK"}
     elseif(ClassEN == "WARRIOR") then return {"TANK","MEELE"}
     elseif(ClassEN == "ROGUE") then return {"MEELE"}
     elseif(ClassEN == "MAGE") then return {"RANGE"}
@@ -163,11 +163,6 @@ local function UpdateDB()
     end
 end
 
-local function UpdateRaid()
-    UpdateDB()
-    currentGroup = RS_PlayerDB
-end
-
 function SaveSetup(Instance, Boss)
     if not RS_SetupDB[Instance] then
         RS_SetupDB[Instance] = {} end
@@ -192,6 +187,17 @@ function LoadSetup(Instance, Boss)
             end
         end
     end
+end
+
+local function UpdateRaid()
+    UpdateDB()
+    currentGroup = RS_PlayerDB
+end
+
+function ResetDB()
+    RS_PlayerDB = RS_PlayerDB_Template
+    RS_SetupDB = RS_SetupDB_Template
+    LoadSetup("Naxxramas", "Maexxna")
 end
 
 local function UpdateSetup()
@@ -266,22 +272,45 @@ local function GetTypeList(arg1)
         end
         return GetRoleClasses(button1.selectedValue), GetClassByName
     elseif(set=="3") then
+        local tkeys = {}
         if (button1.selectedValue==".CLOSED") then
             return {".CLOSED"}, GetClassByName
-        end
-        local tkeys = {}
-        if (button2.selectedValue==".ANY") then
-            for player in pairs(RS_PlayerDB) do
-                table.insert(tkeys, player)
-                if table.getn(tkeys) >= 30 then break end
+        elseif (button1.selectedValue~=".ANY") then
+            for player,v in pairs(RS_PlayerDB) do
+                for _,role in pairs(v[2]) do
+                    if(role==button1.selectedValue) then
+                        table.insert(tkeys, player)
+                    end
+                end
             end
         else
             for player,v in pairs(RS_PlayerDB) do
-                if(v[1]==button2.selectedValue) then
-                    table.insert(tkeys, player)
-                end
-                if table.getn(tkeys) >= 30 then break end
+                table.insert(tkeys, player)
             end
+        end
+        local selectedPlayers = {}
+        for grp=1,8,1 do -- get all selected players
+            for p=1,5,1 do
+                if getglobal("RaidSetupFrame_Grp"..grp.."_Btn"..p.."3") ~= button3 then
+                    selectedPlayers[getglobal("RaidSetupFrame_Grp"..grp.."_Btn"..p.."3").selectedValue]="1"
+                end
+            end
+        end
+        if (button2.selectedValue~=".ANY") then
+            for i=getn(tkeys),1,-1 do
+                if(RS_PlayerDB[tkeys[i]][1]~=button2.selectedValue
+                or selectedPlayers[tkeys[i]]) then
+                    table.remove(tkeys, i)
+                end
+            end
+        end
+        for i=getn(tkeys),1,-1 do
+            if(selectedPlayers[tkeys[i]]) then
+                table.remove(tkeys, i)
+            end
+        end
+        while table.getn(tkeys) >= 30 do
+            table.remove(tkeys, table.getn(tkeys))
         end
         table.sort(tkeys)
         table.insert(tkeys,1, ".ANY")
