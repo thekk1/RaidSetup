@@ -3,7 +3,7 @@
 -- 19.10.2018
 
 -- GetNumRaidMembers()
--- IsRaidLeader()
+-- IsRaidLeader() IsRaidOfficer()
 -- UnitInRaid("unit")
 -- InviteUnit("name" or "unit")
 -- UninviteUnit("name" [, "reason"])
@@ -11,12 +11,16 @@
 -- SetRaidSubgroup(index, subgroup) (subgroup must not be full)
 -- name, rank(0,1(assist),2(lead)), subgroup, level, class(local),
 --    fileName(en class), zone, online = GetRaidRosterInfo(raidIndex);
--- select (n, ...)
+-- select (n, a,b,c,d) -- Is a variant of SwitchCase (switch(n) case a, case b, case c... )
 
 
 ------------------------ Variablen --------------------------
-local currentGroup={}
-local groupSetup={}
+local currentRaid ={}
+local raidSetupUi ={}
+local timer = GetTime()
+local lastUpdate = 0
+local retryBuild = false
+local raidRosterChanged = false
 
 local classes={".ANY","----","PALADIN","PRIEST","DRUID","WARRIOR","ROGUE","MAGE","WARLOCK","HUNTER" }
 if (UnitFactionGroup("player") == "Horde") then table.insert(classes,"SHAMAN") end
@@ -133,34 +137,20 @@ function Tparse(tbl, indent)
   if (type(tbl) ~= "table") then return NO_TABLE end
   if not indent then indent = 0 end
   local _table = ""
-  for key, value in ipairs(tbl) do
+  for key, value in pairs(tbl) do
     local formatting =  GetClassColor(key) .. string.rep("  ", indent) .. key .. ": "
     if type(value) == "table" then
       _table = _table .. " " .. formatting
       _table = _table .. Tparse(value, indent+1)
     elseif type(value) == 'boolean' then
-      _table = _table .. " " .. formatting .. tostring(value)
+      _table = _table .. " " .. formatting .. ( tostring(value) or "nil" )
     elseif type(value) == 'userdata' then
         _table = _table .. " " .. formatting .. getglobal(value):GetName()
     else
-      _table = _table .. " " .. formatting .. value
+      _table = _table .. " " .. formatting .. ( tostring(value) or "nil" )
     end
   end
   return _table .. "\n"
-end
-
-local function UpdateDB()
-    currentGroup = {}
-    for i=1, GetNumRaidMembers() do
-        local name,rank,subgroup,_,class,ClassEN,_,online = GetRaidRosterInfo(i);
-        local role = GetClassRoles(ClassEN)
-        if not (RS_PlayerDB[name]) then
-            RS_PlayerDB[name]= {ClassEN,role}
-        end
-        if not (currentGroup[name]) then
-            currentGroup[name]= {class,role,subgroup,i,rank,online }
-        end
-    end
 end
 
 function SaveSetup(Instance, Boss)
@@ -168,21 +158,22 @@ function SaveSetup(Instance, Boss)
         RS_SetupDB[Instance] = {} end
     if not RS_SetupDB[Instance][Boss] then
         RS_SetupDB[Instance][Boss] = {GroupSetup = {}} end
-    RS_SetupDB[Instance][Boss].GroupSetup = groupSetup
+    RS_SetupDB[Instance][Boss].GroupSetup = raidSetupUi
 end
 
 function LoadSetup(Instance, Boss)
     UIDropDownMenu_SetSelectedValue(getglobal("RaidSetupFrame_Instance"), Instance)
     UIDropDownMenu_SetSelectedValue(getglobal("RaidSetupFrame_Boss"), Boss)
-    groupSetup = assert(RS_SetupDB[Instance][Boss].GroupSetup, "No Setup for: " .. Instance .. "->"..Boss)
+    raidSetupUi = assert(RS_SetupDB[Instance][Boss].GroupSetup, "No Setup for: " .. Instance .. "->"..Boss)
     for grp=1,8,1 do
         for player=1,5,1 do
             for set=1,3,1 do
                 local button = assert(getglobal("RaidSetupFrame_Grp"..grp.."_Btn"..player..set), "Can't find: RaidSetupFrame_Grp"..grp.."_Btn"..player..set)
-                if UIDropDownMenu_GetSelectedValue(button) ~= groupSetup[grp][player][set] then
-                    UIDropDownMenu_SetSelectedValue(button, groupSetup[grp][player][set])
+                if UIDropDownMenu_GetSelectedValue(button) ~= raidSetupUi[grp][player][set] then
+                    UIDropDownMenu_SetSelectedValue(button, raidSetupUi[grp][player][set])
                     button:Hide()
                     button:Show()
+                    raidRosterChanged = true
                 end
             end
         end
@@ -190,28 +181,145 @@ function LoadSetup(Instance, Boss)
 end
 
 local function UpdateRaid()
-    UpdateDB()
-    currentGroup = RS_PlayerDB
+    --print("Roster update")
+    currentRaid = {}
+    for index=1, GetNumRaidMembers() do
+        local name,rank,subgroup,_,_,ClassEN,zone,online = GetRaidRosterInfo(index);
+        local roles = GetClassRoles(ClassEN)
+        if not (RS_PlayerDB[name]) then
+            RS_PlayerDB[name]= {ClassEN,roles}
+        end
+        if not (currentRaid[name]) then
+            currentRaid[name]= {RS_PlayerDB[name][1],RS_PlayerDB[name][2],subgroup,index,rank,zone,online }
+        end
+    end
+end
+
+local function UpdateSetup()
+    raidSetupUi = {}
+    for grp=1,8,1 do
+        table.insert(raidSetupUi, grp, {})
+        for player=1,5,1 do
+            table.insert(raidSetupUi[grp], player, {})
+            for set=1,3,1 do
+                local button = getglobal("RaidSetupFrame_Grp"..grp.."_Btn"..player..set)
+                table.insert(raidSetupUi[grp][player], set, button.selectedValue)
+            end
+        end
+    end
+end
+
+local function FindPlayer(tbl,class,role,exclude)
+    if(role ==".CLOSED") then return end
+    for player, values in pairs(tbl) do
+        if not exclude[player] then
+            if(role == ".ANY" and (class == values[1] or class == ".ANY")) then
+                return player
+            end
+            if(class == values[1] or class == ".ANY") then
+                for _,v in pairs(values[2]) do
+                    if(v==role) then
+                        return player
+                    end
+                end
+            end
+        end
+    end
+end
+
+function BuildRaid2()
+    assert((IsRaidLeader() or IsRaidOfficer()), "You need do be lead or assist to build groups")
+    local count = 0
+    local stop = 10
+    UpdateSetup()
+    local grpAmount = {0,0,0,0,0,0,0,0}
+    for player,values in pairs(currentRaid) do -- get amount of group members
+        grpAmount[values[3]] = grpAmount[values[3]] +1
+    end
+
+    local raidSetupFinal = {}
+    for grp,players in pairs(raidSetupUi) do -- get all players that are explicit set
+        for player,sets in pairs(players) do
+            if (sets[3] ~= ".ANY"
+            and sets[3] ~= ".CLOSED") then
+                local tmp
+                if currentRaid[sets[3]] then
+                    tmp = currentRaid[sets[3]][4]
+                end
+                raidSetupFinal[sets[3]] = { sets[2], sets[1], grp, tmp }
+            end
+        end
+    end
+
+    for grp,players in pairs(raidSetupUi) do -- fill empty slots with suitable players
+        for player,sets in pairs(players) do
+            if(sets[3] ==".CLOSED") then -- slot closed, do nothing
+            elseif(raidSetupFinal[sets[3]]) then -- player already in final setup, do nothing
+            elseif (sets[3] ~= ".ANY") and not (currentRaid[sets[3]]) then -- player not in raid, do nothing
+            elseif(sets[3] == ".ANY") then -- find player for empty slot
+                local tmpPlayer = FindPlayer(currentRaid,sets[2],sets[1],raidSetupFinal)
+                if (tmpPlayer) then
+                    local tmp
+                    if currentRaid[tmpPlayer] then
+                        tmp = currentRaid[tmpPlayer][4]
+                    end
+                    raidSetupFinal[tmpPlayer] = {sets[2], sets[1], grp, tmp }
+                else
+                    --print("No suitable player for grp: "..grp.." slot: "..player)
+                end
+            end
+        end
+    end
+
+    --print(Tparse(raidSetupFinal))
+
+    for player,values in pairs(raidSetupFinal) do
+        if values[4] then -- player exists in raid?
+            if (currentRaid[player][3] ~= values[3]) then -- check if the player is in his target group
+                if(grpAmount[values[3]] < 5) then -- if his target group has less than 5 players
+                    count = count +1
+                    if(count > stop) then retryBuild = true; return end
+                    SetRaidSubgroup(values[4], values[3]) -- use SetRaidSubgroup(index, subgroup)
+                    --print("SetRaidSubgroup")
+                    grpAmount[values[3]] = grpAmount[values[3]] +1
+                    currentRaid[player][3]=values[3]
+                else    -- if his target group has 5 players
+                    for swapPlayer, swapPlayerValues in pairs(currentRaid) do -- find a player to swap
+                        if raidSetupFinal[swapPlayer] then
+                            if( raidSetupFinal[swapPlayer][3] ~= swapPlayerValues[3] -- must not in his target group
+                            and raidSetupFinal[player][3] == swapPlayerValues[3]) then -- must be in players target group
+                                count = count +1
+                                if(count > stop) then retryBuild = true; return end
+                                SwapRaidSubgroup(values[4], swapPlayerValues[4]) -- SwapRaidSubgroup(index1, index2)
+                                --print("SwapRaidSubgroup1 "..player.." "..currentRaid[player][3].." "..swapPlayer.." "..swapPlayerValues[3])
+                                currentRaid[swapPlayer][3]=currentRaid[player][3]
+                                currentRaid[player][3]=values[3]
+                                break
+                            end
+                        else
+                            if( raidSetupFinal[player][3] == swapPlayerValues[3]) then -- must be in players target group
+                                count = count +1
+                                if(count > stop) then retryBuild = true; return end
+                                SwapRaidSubgroup(values[4], swapPlayerValues[4]) -- SwapRaidSubgroup(index1, index2)
+                                --print("SwapRaidSubgroup2 "..player.." "..currentRaid[player][3].." "..swapPlayer.." "..swapPlayerValues[3])
+                                currentRaid[swapPlayer][3]=currentRaid[player][3]
+                                currentRaid[player][3]=values[3]
+                                break
+                            end
+                        end
+                    end
+                end
+            end
+        else
+            print(player.." Grp: "..values[3].." not in raid")
+        end
+    end
 end
 
 function ResetDB()
     RS_PlayerDB = RS_PlayerDB_Template
     RS_SetupDB = RS_SetupDB_Template
     LoadSetup("Naxxramas", "Maexxna")
-end
-
-local function UpdateSetup()
-    groupSetup = {}
-    for grp=1,8,1 do
-        table.insert(groupSetup, grp, {})
-        for player=1,5,1 do
-            table.insert(groupSetup[grp], player, {})
-            for set=1,3,1 do
-                local button = getglobal("RaidSetupFrame_Grp"..grp.."_Btn"..player..set)
-                table.insert(groupSetup[grp][player], set, button.selectedValue)
-            end
-        end
-    end
 end
 
 function RS_InstanceDropDown_Init()
@@ -276,7 +384,7 @@ local function GetTypeList(arg1)
         if (button1.selectedValue==".CLOSED") then
             return {".CLOSED"}, GetClassByName
         elseif (button1.selectedValue~=".ANY") then
-            for player,v in pairs(RS_PlayerDB) do
+            for player,v in pairs(currentRaid) do
                 for _,role in pairs(v[2]) do
                     if(role==button1.selectedValue) then
                         table.insert(tkeys, player)
@@ -284,7 +392,7 @@ local function GetTypeList(arg1)
                 end
             end
         else
-            for player,v in pairs(RS_PlayerDB) do
+            for player,v in pairs(currentRaid) do
                 table.insert(tkeys, player)
             end
         end
@@ -298,23 +406,25 @@ local function GetTypeList(arg1)
         end
         if (button2.selectedValue~=".ANY") then
             for i=getn(tkeys),1,-1 do
-                if(RS_PlayerDB[tkeys[i]][1]~=button2.selectedValue
+                if(currentRaid[tkeys[i]][1]~=button2.selectedValue
                 or selectedPlayers[tkeys[i]]) then
                     table.remove(tkeys, i)
                 end
             end
         end
         for i=getn(tkeys),1,-1 do
-            if(selectedPlayers[tkeys[i]]) then
+            if(selectedPlayers[tkeys[i]]
+            or tkeys[i] == button3.selectedValue) then
                 table.remove(tkeys, i)
             end
         end
-        while table.getn(tkeys) >= 30 do
-            table.remove(tkeys, table.getn(tkeys))
-        end
+--        while table.getn(tkeys) >= 30 do
+--            table.remove(tkeys, table.getn(tkeys))
+--        end
         table.sort(tkeys)
         table.insert(tkeys,1, ".ANY")
         table.insert(tkeys,2, "----")
+        if (button3.selectedValue ~= ".ANY") then table.insert(tkeys,3,button3.selectedValue) end
         return tkeys, GetClassByName
     end
 end
@@ -323,7 +433,10 @@ function RS_PlayerDropDown_Init()
     local info
     local frame = getglobal(string.gsub(this:GetName() ,"Button",""))
     local list, method = GetTypeList(frame)
+    local count = 0
     for _,v in pairs(list) do
+        count = count + 1
+        if count > 32 then break end
         info = {
             justifyH="LEFT",
             text = GetClassColor(method(v))..v,
@@ -345,8 +458,9 @@ function RS_DropDown_OnShow()
         UIDropDownMenu_Initialize(this, RS_BossDropDown_Init, "MENU")
         UIDropDownMenu_SetSelectedValue(this, this.selectedValue)
     else
-        UIDropDownMenu_Initialize(this, RS_PlayerDropDown_Init)
+        UIDropDownMenu_Initialize(this, RS_PlayerDropDown_Init, "MENU")
         UIDropDownMenu_SetSelectedValue(this, this.selectedValue)
+        --UIDropDownMenu_SetAnchor(-40, 0, this, "CENTER", this:GetParent():GetName(), "CENTER")
     end
 end
 
@@ -387,17 +501,25 @@ function RS_PlayerDropDown_OnClick(button) -- button = RaidSetupFrame_GrpX_BtnYZ
     end
 
     UpdateSetup()
+    raidRosterChanged = true
 end
 
 function RaidSetup()
-    RaidSetupFrame:Show()
+    if(RaidSetupFrame:IsVisible()) then
+        RaidSetupFrame:Hide()
+        RaidFrame:GetParent():Hide()
+    else
+        RaidSetupFrame:Show()
+        RaidFrame:GetParent():Show()
+        RaidFrame:Show()
+        FriendsFrameTab4:Click()
+    end
 end
 
 -------------------- Register game event handlers ---------------------------
 function RaidSetup_OnLoad()
     RaidSetupFrame:RegisterEvent("ADDON_LOADED")
     RaidSetupFrame:RegisterEvent("RAID_ROSTER_UPDATE")
-    RaidSetupFrame:RegisterEvent("UPDATE_INSTANCE_INFO")
     getglobal("DropDownList1"):SetClampedToScreen( true )
     SLASH_RAIDSETUP_SLASH1 = '/RaidSetup'
     SlashCmdList['RAIDSETUP_SLASH'] = RaidSetup
@@ -410,8 +532,26 @@ function RaidSetup_OnEvent(event)
         if not RS_PlayerDB then RS_PlayerDB = RS_PlayerDB_Template end
         if not RS_SetupDB then RS_SetupDB = RS_SetupDB_Template end
         LoadSetup("Naxxramas", "Maexxna")
+        UpdateRaid()
     end
     if (event == "RAID_ROSTER_UPDATE") then
         UpdateRaid()
+        if(RaidSetupFrame_Build_Auto:GetChecked()) then
+            raidRosterChanged = true
+        end
+
+    end
+end
+
+function RaidSetup_OnUpdate(arg1)
+    lastUpdate = lastUpdate + arg1
+    if( RaidSetupFrame_Build_Auto:GetChecked()
+    or  retryBuild)
+    and raidRosterChanged
+    and lastUpdate > 1 then
+        raidRosterChanged = false
+        --print("lastUpdate : "..lastUpdate)
+        lastUpdate = 0
+        BuildRaid2()
     end
 end
