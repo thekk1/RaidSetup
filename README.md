@@ -1,5 +1,5 @@
 # RaidSetup
-[![Join the chat at https://gitter.im/openshift/openshift-ansible](https://github.com/thekk1/RaidSetup/blob/master/Screenshots/UI.jpg)](https://github.com/thekk1/RaidSetup/blob/master/Screenshots/UI.jpg)
+[<img src="https://github.com/thekk1/RaidSetup/blob/master/Screenshots/UI.jpg" alt="Screenshots" width="400">](https://github.com/thekk1/RaidSetup/blob/master/Screenshots)
 
 Datenbank(Nach Loggout): "\WTF\Account\%LOGIN%\SavedVariables\RaidSetup.lua"
 
