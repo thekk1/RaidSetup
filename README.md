@@ -30,16 +30,16 @@ Beim Bauen werden entsprechende Spieler für die Slots ausgewählt und dorthin v
 | HEAL | PALADIN | ANY | Alle Heal Palas |
 | ANY | ANY | Thekk | Das ist mein Slot |
 
-Bitte beachtet, dass die Reihenfolge der Spieler innerhalb der einzelenen Gruppen im Raid nach dem Sortieren anders sein kann als in dem BossLayout.
+Bitte beachtet, dass die Reihenfolge der Spieler innerhalb der einzelenen Gruppen im Raid nach dem Sortieren anders sein kann als in dem Boss Layout.
 Das ist eine Eigenart des Spiels und lässt sich nicht ändern
 
 
 ### Geplante/nicht implementierte Funktionen:
 
-- Eingabefeld bei den Bossen um mehrere eigene Schema anzulegen
+- Eingabefeld bei den Bossen um mehrere eigene Layouts anzulegen
 - Weitere Reiter für MT Targets und Heilerzuordnung bezogen auf das Schema (Inkl. setzten der MT Targets über Ora2 und Posten der Heilereinteilung)
 - Weiterer Reiter für die Anzeige der Spieler-Datenbank mit Einstellungsmöglichkeiten
-- Autoupdate der Spieler-Rollen nach aktueller Skillung (BigWigs vorrausgesetzt)
+- Autoupdate der Spieler-Rollen nach aktueller Skillung (Ora2 vorrausgesetzt)
 - Ingame Verteilung der Spieler- und Schema-Datenbanken
 - Einbeziehung einer Ersatzbank in das Schema mit automatischem entfernen/einladen der Spieler
 - Nach Bauen Whisper an jeden Spieler mit seiner Rolle und Gruppe (Für evtl. Umskillen) (Spamfilter Serverseitig)
