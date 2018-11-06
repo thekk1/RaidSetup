@@ -5,15 +5,15 @@ Datenbank(Nach Loggout): "\WTF\Account\%LOGIN%\SavedVariables\RaidSetup.lua"
 
 ### Funktionen:
 
+- Bauen des Raids nach angezeigtem Schema
+- Auto Build - aktualisiert die Raidaufstellung bei: Hinzufügen/Entfernen eines Spielers, Laden eines Setups, Ändern der Aufstellung
+- Slotbelegung nach den Filtern: Rolle->Klasse->Spieler. (Alle Optional und einzeln nutzbar)
+- Sperren von Slots (keine Beachtung beim Bauen)
+- Laden und Speichern der Setups
 - Aufrufen und schließen der UI mit /RaidSetup (Öffnet zugleich den Ingame RaidFrame)
 - Auswahlmöglichkeiten und Gestaltung siehe Screenshots
 - Samelt die Spieler aus eurem Raid in einer Datenbank
-- Laden und Speichern der Setups (Naxxramas Templates fest eingepflegt)
-- DB resetten (Naxxtemplates bleiben erhalten)
-- Sperren von Slots (keine Beachtung beim Bauen)
-- Slotbelegung nach den Filtern: Rolle->Klasse->Spieler. (Alle Optional und einzeln nutzbar.)
-- Bauen des Raids nach angezeigtem Schema
-- Auto Build - aktualisiert die Raidaufstellung bei: Hinzufügen/Entfernen eines Spielers, Laden eines Setups, Ändern der Aufstellung
+- DB resetten (Templates werden wiederhergestellt, alle Einstellungen werden gelöscht)
 
 
 ### Erläuterung zur Bedienung:
