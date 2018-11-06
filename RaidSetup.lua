@@ -545,13 +545,16 @@ end
 
 function RaidSetup_OnUpdate(arg1)
     lastUpdate = lastUpdate + arg1
-    if( RaidSetupFrame_Build_Auto:GetChecked()
-    or  retryBuild)
-    and raidRosterChanged
-    and lastUpdate > 1 then
-        raidRosterChanged = false
-        --print("lastUpdate : "..lastUpdate)
-        lastUpdate = 0
-        BuildRaid2()
+
+    if lastUpdate > 1 then
+	lastUpdate = 0
+	if raidRosterChanged then
+		raidRosterChanged = false
+        	if RaidSetupFrame_Build_Auto:GetChecked()
+        	or retryBuild then
+           		--print("lastUpdate : "..lastUpdate)
+           		BuildRaid2()
+        	end
+	end
     end
 end
