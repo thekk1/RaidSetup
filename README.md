@@ -1,5 +1,5 @@
 # RaidSetup
-[<img src="https://github.com/thekk1/RaidSetup/blob/master/Screenshots/UI.jpg" alt="Screenshots" width="400">](https://github.com/thekk1/RaidSetup/blob/master/Screenshots)
+[<img src="https://github.com/thekk1/RaidSetup/blob/master/Screenshots/UI.jpg" alt="Screenshots" width="400">](https://github.com/thekk1/RaidSetup/blob/master/Screenshots/UI.jpg)
 
 Datenbank(Nach Loggout): "\WTF\Account\%LOGIN%\SavedVariables\RaidSetup.lua"
 
@@ -10,13 +10,14 @@ Datenbank(Nach Loggout): "\WTF\Account\%LOGIN%\SavedVariables\RaidSetup.lua"
 - Slotbelegung nach den Filtern: Rolle->Klasse->Spieler. (Alle Optional und einzeln nutzbar)
 - Sperren von Slots (keine Beachtung beim Bauen)
 - Laden und Speichern der Setups
-- Aufrufen und schließen der UI mit /RaidSetup (Öffnet zugleich den Ingame RaidFrame)
-- Auswahlmöglichkeiten und Gestaltung siehe Screenshots
 - Samelt die Spieler aus eurem Raid in einer Datenbank
 - DB resetten (Templates werden wiederhergestellt, alle Einstellungen werden gelöscht)
+- Auswahlmöglichkeiten und Gestaltung siehe [Screenshots](https://github.com/thekk1/RaidSetup/blob/master/Screenshots)
 
 
-### Erläuterung zur Bedienung:
+### Bedienung:
+
+/RaidSetup - Aufrufen und schließen der UI (Öffnet zugleich den Ingame RaidFrame)
 
 Die Spalten "Role", "Class" und "Player" sind Filter, durch die entschieden wird welcher Spieler aus eurem Raid für diesen Slot geeignet ist.
 Gleichzeitig schränkt jeder Filter die Auswahl zu seiner Rechten ein, um eine bessere Übersicht du gewährleisten.
