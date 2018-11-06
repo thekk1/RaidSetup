@@ -1,5 +1,5 @@
 # RaidSetup
-[<img src="https://github.com/thekk1/RaidSetup/blob/master/Screenshots/UI.jpg" alt="Screenshots" width="200">](https://github.com/thekk1/RaidSetup/blob/master/Screenshots/UI.jpg)
+[<img src="./Screenshots/UI.jpg" alt="Screenshots" width="200">](./Screenshots/UI.jpg)
 
 Datenbank(Nach Loggout): "\WTF\Account\%LOGIN%\SavedVariables\RaidSetup.lua"
 
@@ -12,7 +12,7 @@ Datenbank(Nach Loggout): "\WTF\Account\%LOGIN%\SavedVariables\RaidSetup.lua"
 - Laden und Speichern der Setups
 - Samelt die Spieler aus eurem Raid in einer Datenbank
 - DB resetten (Templates werden wiederhergestellt, alle Einstellungen werden gelöscht)
-- Auswahlmöglichkeiten und Gestaltung siehe [Screenshots](https://github.com/thekk1/RaidSetup/blob/master/Screenshots)
+- Auswahlmöglichkeiten und Gestaltung siehe [Screenshots](./Screenshots)
 
 
 ### Bedienung:
