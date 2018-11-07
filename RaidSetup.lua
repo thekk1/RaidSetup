@@ -100,15 +100,15 @@ end
 
 local function GetClassRoles(name)
     local ClassEN = GetClassByName(name) or name
-    if(ClassEN == "PALADIN") then return {"HEAL","TANK","MEELE"}
-    elseif(ClassEN == "PRIEST") then return {"HEAL","RANGE"}
-    elseif(ClassEN == "DRUID") then return {"HEAL","MEELE","RANGE","TANK"}
+    if(ClassEN == "PALADIN") then return {"HEAL"}
+    elseif(ClassEN == "PRIEST") then return {"HEAL"}
+    elseif(ClassEN == "DRUID") then return {"HEAL"}
     elseif(ClassEN == "WARRIOR") then return {"TANK","MEELE"}
     elseif(ClassEN == "ROGUE") then return {"MEELE"}
     elseif(ClassEN == "MAGE") then return {"RANGE"}
     elseif(ClassEN == "WARLOCK") then return {"RANGE"}
     elseif(ClassEN == "HUNTER") then return {"RANGE"}
-    elseif(ClassEN == "SHAMAN") then return {"HEAL","MEELE","RANGE"}
+    elseif(ClassEN == "SHAMAN") then return {"HEAL"}
     else return "" end
 end
 
@@ -229,7 +229,7 @@ end
 
 function BuildRaid2()
     assert((IsRaidLeader() or IsRaidOfficer()), "You need do be lead or assist to build groups")
-    local count = 0
+    local action = 0
     local stop = 10
     UpdateSetup()
     local grpAmount = {0,0,0,0,0,0,0,0}
@@ -272,46 +272,45 @@ function BuildRaid2()
     end
 
     --print(Tparse(raidSetupFinal))
-
-    for player,values in pairs(raidSetupFinal) do
-        if values[4] then -- player exists in raid?
-            if (currentRaid[player][3] ~= values[3]) then -- check if the player is in his target group
-                if(grpAmount[values[3]] < 5) then -- if his target group has less than 5 players
-                    count = count +1
-                    if(count > stop) then retryBuild = true; return end
-                    SetRaidSubgroup(values[4], values[3]) -- use SetRaidSubgroup(index, subgroup)
-                    --print("SetRaidSubgroup")
-                    grpAmount[values[3]] = grpAmount[values[3]] +1
-                    currentRaid[player][3]=values[3]
-                else    -- if his target group has 5 players
-                    for swapPlayer, swapPlayerValues in pairs(currentRaid) do -- find a player to swap
-                        if raidSetupFinal[swapPlayer] then
-                            if( raidSetupFinal[swapPlayer][3] ~= swapPlayerValues[3] -- must not in his target group
-                            and raidSetupFinal[player][3] == swapPlayerValues[3]) then -- must be in players target group
-                                count = count +1
-                                if(count > stop) then retryBuild = true; return end
+    for player,values in pairs(currentRaid) do
+        if raidSetupFinal[player] then
+            if raidSetupFinal[player][3]~= values[3] then -- check if the player is not in his target group
+                for swapPlayer, swapPlayerValues in pairs(currentRaid) do -- find a player to swap
+                    if( raidSetupFinal[player][3] == swapPlayerValues[3]) then -- must be in players target group
+                        if raidSetupFinal[swapPlayer] then -- exists in setup?
+                            if raidSetupFinal[swapPlayer][3] ~= swapPlayerValues[3] then-- must not in his target group
+                                action = action +1
+                                if(action > stop) then retryBuild = true; return end
                                 SwapRaidSubgroup(values[4], swapPlayerValues[4]) -- SwapRaidSubgroup(index1, index2)
-                                --print("SwapRaidSubgroup1 "..player.." "..currentRaid[player][3].." "..swapPlayer.." "..swapPlayerValues[3])
+                                print("SwapRaidSubgroup1 "..player.." "..currentRaid[player][3].." "..swapPlayer.." "..swapPlayerValues[3])
                                 currentRaid[swapPlayer][3]=currentRaid[player][3]
-                                currentRaid[player][3]=values[3]
+                                currentRaid[player][3]=raidSetupFinal[player][3]
                                 break
                             end
                         else
-                            if( raidSetupFinal[player][3] == swapPlayerValues[3]) then -- must be in players target group
-                                count = count +1
-                                if(count > stop) then retryBuild = true; return end
-                                SwapRaidSubgroup(values[4], swapPlayerValues[4]) -- SwapRaidSubgroup(index1, index2)
-                                --print("SwapRaidSubgroup2 "..player.." "..currentRaid[player][3].." "..swapPlayer.." "..swapPlayerValues[3])
-                                currentRaid[swapPlayer][3]=currentRaid[player][3]
-                                currentRaid[player][3]=values[3]
-                                break
-                            end
+                            action = action +1
+                            if(action > stop) then retryBuild = true; return end
+                            SwapRaidSubgroup(values[4], swapPlayerValues[4]) -- SwapRaidSubgroup(index1, index2)
+                            print("SwapRaidSubgroup2 "..player.." "..currentRaid[player][3].." "..swapPlayer.." "..swapPlayerValues[3])
+                            currentRaid[swapPlayer][3]=currentRaid[player][3]
+                            currentRaid[player][3]=raidSetupFinal[player][3]
+                            break
                         end
                     end
                 end
+                if raidSetupFinal[player][3]~= values[3] -- again check if the player is not in his target group
+                and (grpAmount[raidSetupFinal[player][3]] < 5) then -- if his target group has less than 5 players
+                    action = action +1
+                    if(action > stop) then retryBuild = true; return end
+                    SetRaidSubgroup(values[4], raidSetupFinal[player][3]) -- use SetRaidSubgroup(index, subgroup)
+                    print("SetRaidSubgroup: "..player.." Index: "..values[4].." Grp: "..raidSetupFinal[player][3])
+                    grpAmount[values[3]] = grpAmount[values[3]] -1
+                    grpAmount[raidSetupFinal[player][3]] = grpAmount[raidSetupFinal[player][3]] +1
+                    currentRaid[player][3]=raidSetupFinal[player][3]
+                end
             end
         else
-            print(player.." Grp: "..values[3].." not in raid")
+            print("No suitable slot for: "..player)
         end
     end
 end
@@ -465,7 +464,6 @@ function RS_DropDown_OnShow()
 end
 
 local function GetValue(value) for k,v in pairs(RS_SetupDB[value]) do return k end end
-
 function RS_InstanceDropDown_OnClick(button) -- button = RaidSetupFrame_Instance
     UIDropDownMenu_SetSelectedValue(button, this.value) -- this = DropDownList1Button[level]
     local bossButton = getglobal("RaidSetupFrame_Boss")
@@ -547,14 +545,14 @@ function RaidSetup_OnUpdate(arg1)
     lastUpdate = lastUpdate + arg1
 
     if lastUpdate > 1 then
-	lastUpdate = 0
-	if raidRosterChanged then
-		raidRosterChanged = false
-        	if RaidSetupFrame_Build_Auto:GetChecked()
-        	or retryBuild then
-           		--print("lastUpdate : "..lastUpdate)
-           		BuildRaid2()
-        	end
-	end
+	    lastUpdate = 0
+	    if (raidRosterChanged
+        and RaidSetupFrame_Build_Auto:GetChecked())
+        or  retryBuild then
+	    	raidRosterChanged = false
+            retryBuild = false
+            --print("lastUpdate : "..lastUpdate)
+            BuildRaid2()
+	    end
     end
 end
