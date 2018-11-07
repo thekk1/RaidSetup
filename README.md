@@ -6,12 +6,17 @@ Datenbank für export (nach Loggout): "\WTF\Account\\%LOGIN%\SavedVariables\Raid
 ### Funktionen:
 
 - Bauen des Raids nach angezeigtem Schema
-- Auto Build - aktualisiert die Raidaufstellung bei: Hinzufügen/Entfernen eines Spielers, Laden eines Setups, Ändern der Aufstellung
+- Auto Build - aktualisiert die Raidaufstellung bei:
+  - Hinzufügen/Entfernen eines Spielers
+  - Laden eines Setups
+  - Ändern der Aufstellung
 - Slotbelegung nach den Filtern: Rolle->Klasse->Spieler. (Alle Optional und einzeln nutzbar)
 - Sperren von Slots (keine Beachtung beim Bauen)
 - Laden und Speichern der Setups
 - Samelt die Spieler aus eurem Raid in einer Datenbank
-- DB resetten (Templates werden wiederhergestellt, alle Einstellungen werden gelöscht)
+- DB reset
+  - Templates werden wiederhergestellt
+  - Persönliche Einstellungen werden gelöscht
 - Auswahlmöglichkeiten und Gestaltung siehe [Screenshots](./Screenshots)
 
 
