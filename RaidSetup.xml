@@ -267,6 +267,34 @@ UI.xsd">
                     </OnClick>
                 </Scripts>
             </CheckButton>
+            <CheckButton name="$parent_OnlyRaidPlayers" inherits="UICheckButtonTemplate" checked="false">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="$parent_Build">
+                        <Offset>
+                            <AbsDimension x="30" y="-2"></AbsDimension>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            if(this:GetChecked()) then
+                                OnlyRaidPlayers(true)
+                            else
+                                OnlyRaidPlayers(false)
+                            end
+                    </OnClick>
+                </Scripts>
+
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString name="$parent_Text" inherits="GameFontNormal" justifyH="LEFT" text="Only Raid Players">
+                            <Anchors><Anchor point="RIGHT" relativeTo="$parent">
+                                <Offset><AbsDimension x="85" y="0"/></Offset></Anchor></Anchors>
+                            <FontHeight><AbsValue val="20"/></FontHeight>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </CheckButton>
             <Button name="$parent_ResetDB" inherits="OptionsButtonTemplate" text="Reset DB">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">

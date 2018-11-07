@@ -23,6 +23,7 @@ local lastUpdate = 0
 local retryBuild = false
 local raidRosterChanged = false
 local safetyBoxOption = nil
+local onlyRaidPlayers = false
 
 local classes={".ANY","----","PALADIN","PRIEST","DRUID","WARRIOR","ROGUE","MAGE","WARLOCK","HUNTER" }
 if (UnitFactionGroup("player") == "Horde") then table.insert(classes,"SHAMAN") end
@@ -383,6 +384,7 @@ function RS_BossDropDown_Init()
     end
 end
 
+function OnlyRaidPlayers(option) onlyRaidPlayers=option end
 local function GetTypeList(arg1)
     local _,_,grp,_,btn,set = string.find(arg1:GetName(), "(%d)(.+)(%d)(%d)")
     local button1 = getglobal(string.gsub(arg1:GetName(), "(%d)(.+)(%d)(%d)", "%1%2%31"))
@@ -405,10 +407,10 @@ local function GetTypeList(arg1)
     elseif(set=="3") then
         local tkeys = {}
         local usedDB
-        if true then
-            usedDB = RS_PlayerDB
-        else
+        if onlyRaidPlayers then
             usedDB = currentRaid
+        else
+            usedDB = RS_PlayerDB
         end
 
         if (button1.selectedValue==".CLOSED") then
