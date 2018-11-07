@@ -1,7 +1,7 @@
 # RaidSetup
 [<img src="./Screenshots/UI.jpg" alt="Screenshots" width="200">](./Screenshots/UI.jpg)
 
-Datenbank(Nach Loggout): "\WTF\Account\\%LOGIN%\SavedVariables\RaidSetup.lua"
+Datenbank für export (nach Loggout): "\WTF\Account\\%LOGIN%\SavedVariables\RaidSetup.lua"
 
 ### Funktionen:
 
@@ -20,7 +20,7 @@ Datenbank(Nach Loggout): "\WTF\Account\\%LOGIN%\SavedVariables\RaidSetup.lua"
 /RaidSetup - Aufrufen und schließen der UI (Öffnet zugleich den Ingame RaidFrame)
 
 Die Spalten "Role", "Class" und "Player" sind Filter, durch die entschieden wird welcher Spieler aus eurem Raid für diesen Slot geeignet ist.
-Gleichzeitig schränkt jeder Filter die Auswahl zu seiner Rechten ein, um eine bessere Übersicht du gewährleisten.
+Gleichzeitig schränkt jeder Filter die Auswahl zu seiner Rechten ein, um eine bessere Übersicht zu gewährleisten.
 Beim Bauen werden entsprechende Spieler für die Slots ausgewählt und dorthin verschoben.
 
 | Role | Class | Player | Bedeutung/Ergebnis |
@@ -30,7 +30,7 @@ Beim Bauen werden entsprechende Spieler für die Slots ausgewählt und dorthin v
 | HEAL | PALADIN | ANY | Alle Heal Palas |
 | ANY | ANY | Thekk | Das ist mein Slot |
 
-Bitte beachtet, dass die Reihenfolge der Spieler innerhalb der einzelenen Gruppen im Raid nach dem Sortieren anders sein kann als in dem Boss Layout.
+Bitte beachtet, dass die Reihenfolge der Spieler innerhalb der einzelenen Gruppen im Raid nach dem Sortieren anders sein kann als in dem Layout.
 Das ist eine Eigenart des Spiels und lässt sich nicht ändern
 
 
