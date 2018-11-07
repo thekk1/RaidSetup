@@ -17,10 +17,12 @@
 ------------------------ Variablen --------------------------
 local currentRaid ={}
 local raidSetupUi ={}
+local raidSetupFinal = {}
 local timer = GetTime()
 local lastUpdate = 0
 local retryBuild = false
 local raidRosterChanged = false
+local safetyBoxOption = nil
 
 local classes={".ANY","----","PALADIN","PRIEST","DRUID","WARRIOR","ROGUE","MAGE","WARLOCK","HUNTER" }
 if (UnitFactionGroup("player") == "Horde") then table.insert(classes,"SHAMAN") end
@@ -153,7 +155,7 @@ function Tparse(tbl, indent)
   return _table .. "\n"
 end
 
-function SaveSetup(Instance, Boss)
+local function SaveSetup(Instance, Boss)
     if not RS_SetupDB[Instance] then
         RS_SetupDB[Instance] = {} end
     if not RS_SetupDB[Instance][Boss] then
@@ -161,7 +163,7 @@ function SaveSetup(Instance, Boss)
     RS_SetupDB[Instance][Boss].GroupSetup = raidSetupUi
 end
 
-function LoadSetup(Instance, Boss)
+local function LoadSetup(Instance, Boss)
     UIDropDownMenu_SetSelectedValue(getglobal("RaidSetupFrame_Instance"), Instance)
     UIDropDownMenu_SetSelectedValue(getglobal("RaidSetupFrame_Boss"), Boss)
     raidSetupUi = assert(RS_SetupDB[Instance][Boss].GroupSetup, "No Setup for: " .. Instance .. "->"..Boss)
@@ -180,6 +182,13 @@ function LoadSetup(Instance, Boss)
     end
 end
 
+local function ResetDB()
+    RS_PlayerDB = RS_PlayerDB_Template
+    RS_SetupDB = RS_SetupDB_Template
+    LoadSetup("Naxxramas", "Anub'Rekhan")
+end
+
+
 local function UpdateRaid()
     --print("Roster update")
     currentRaid = {}
@@ -195,7 +204,7 @@ local function UpdateRaid()
     end
 end
 
-local function UpdateSetup()
+local function UpdateUiSetup()
     raidSetupUi = {}
     for grp=1,8,1 do
         table.insert(raidSetupUi, grp, {})
@@ -227,21 +236,17 @@ local function FindPlayer(tbl,class,role,exclude)
     end
 end
 
-function BuildRaid2()
-    assert((IsRaidLeader() or IsRaidOfficer()), "You need do be lead or assist to build groups")
-    local action = 0
-    local stop = 10
-    UpdateSetup()
-    local grpAmount = {0,0,0,0,0,0,0,0}
-    for player,values in pairs(currentRaid) do -- get amount of group members
-        grpAmount[values[3]] = grpAmount[values[3]] +1
+local function CalcSetup()
+    for player,_ in pairs(raidSetupFinal) do -- remove all players not in raid
+        if not currentRaid[player] then
+            raidSetupFinal[player]=nil
+        end
     end
 
-    local raidSetupFinal = {}
     for grp,players in pairs(raidSetupUi) do -- get all players that are explicit set
         for player,sets in pairs(players) do
             if (sets[3] ~= ".ANY"
-            and sets[3] ~= ".CLOSED") then
+                    and sets[3] ~= ".CLOSED") then
                 local tmp
                 if currentRaid[sets[3]] then
                     tmp = currentRaid[sets[3]][4]
@@ -265,10 +270,23 @@ function BuildRaid2()
                     end
                     raidSetupFinal[tmpPlayer] = {sets[2], sets[1], grp, tmp }
                 else
-                    --print("No suitable player for grp: "..grp.." slot: "..player)
+                    print("No suitable player for grp: "..grp.." slot: "..player)
                 end
             end
         end
+    end
+end
+
+function BuildRaid()
+    assert((IsRaidLeader() or IsRaidOfficer()), "You need do be lead or assist to build groups")
+    local action = 0
+    local stop = 10
+    UpdateRaid()
+    UpdateUiSetup()
+    CalcSetup()
+    local grpAmount = {0,0,0,0,0,0,0,0}
+    for player,values in pairs(currentRaid) do -- get amount of group members
+        grpAmount[values[3]] = grpAmount[values[3]] +1
     end
 
     --print(Tparse(raidSetupFinal))
@@ -315,10 +333,16 @@ function BuildRaid2()
     end
 end
 
-function ResetDB()
-    RS_PlayerDB = RS_PlayerDB_Template
-    RS_SetupDB = RS_SetupDB_Template
-    LoadSetup("Naxxramas", "Maexxna")
+function SafetyBoxOption(option) safetyBoxOption=option end
+function SafetyBox()
+    if safetyBoxOption == "Save" then
+        SaveSetup(getglobal("RaidSetupFrame_Instance").selectedValue, getglobal("RaidSetupFrame_Boss").selectedValue)
+    elseif safetyBoxOption == "Load" then
+        LoadSetup(getglobal("RaidSetupFrame_Instance").selectedValue, getglobal("RaidSetupFrame_Boss").selectedValue)
+    elseif safetyBoxOption == "DbReset" then
+        ResetDB()
+    end
+    safetyBoxOption = nil
 end
 
 function RS_InstanceDropDown_Init()
@@ -380,10 +404,17 @@ local function GetTypeList(arg1)
         return GetRoleClasses(button1.selectedValue), GetClassByName
     elseif(set=="3") then
         local tkeys = {}
+        local usedDB
+        if true then
+            usedDB = RS_PlayerDB
+        else
+            usedDB = currentRaid
+        end
+
         if (button1.selectedValue==".CLOSED") then
             return {".CLOSED"}, GetClassByName
         elseif (button1.selectedValue~=".ANY") then
-            for player,v in pairs(currentRaid) do
+            for player,v in pairs(usedDB) do
                 for _,role in pairs(v[2]) do
                     if(role==button1.selectedValue) then
                         table.insert(tkeys, player)
@@ -391,7 +422,7 @@ local function GetTypeList(arg1)
                 end
             end
         else
-            for player,v in pairs(currentRaid) do
+            for player,v in pairs(usedDB) do
                 table.insert(tkeys, player)
             end
         end
@@ -405,7 +436,7 @@ local function GetTypeList(arg1)
         end
         if (button2.selectedValue~=".ANY") then
             for i=getn(tkeys),1,-1 do
-                if(currentRaid[tkeys[i]][1]~=button2.selectedValue
+                if(usedDB[tkeys[i]][1]~=button2.selectedValue
                 or selectedPlayers[tkeys[i]]) then
                     table.remove(tkeys, i)
                 end
@@ -498,7 +529,7 @@ function RS_PlayerDropDown_OnClick(button) -- button = RaidSetupFrame_GrpX_BtnYZ
         UIDropDownMenu_SetSelectedValue(button3, ".ANY")
     end
 
-    UpdateSetup()
+    UpdateUiSetup()
     raidRosterChanged = true
 end
 
@@ -529,7 +560,7 @@ function RaidSetup_OnEvent(event)
 		print("RaidSetup loaded")
         if not RS_PlayerDB then RS_PlayerDB = RS_PlayerDB_Template end
         if not RS_SetupDB then RS_SetupDB = RS_SetupDB_Template end
-        LoadSetup("Naxxramas", "Maexxna")
+        LoadSetup("Naxxramas", "Anub'Rekhan")
         UpdateRaid()
     end
     if (event == "RAID_ROSTER_UPDATE") then
@@ -552,7 +583,7 @@ function RaidSetup_OnUpdate(arg1)
 	    	raidRosterChanged = false
             retryBuild = false
             --print("lastUpdate : "..lastUpdate)
-            BuildRaid2()
+            BuildRaid()
 	    end
     end
 end
