@@ -1,7 +1,7 @@
 # RaidSetup
 [<img src="./Screenshots/UI.jpg" alt="Screenshots" width="200">](./Screenshots/UI.jpg)
 
-Datenbank(Nach Loggout): "\WTF\Account\\%LOGIN%\SavedVariables\RaidSetup.lua"
+Datenbank für export (nach Loggout): "\WTF\Account\\%LOGIN%\SavedVariables\RaidSetup.lua"
 
 ### Funktionen:
 
