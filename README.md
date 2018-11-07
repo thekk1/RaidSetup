@@ -1,5 +1,5 @@
 # RaidSetup
-[<img src="./Screenshots/UI.jpg" alt="Screenshots" width="200">](./Screenshots/UI.jpg)
+[<img src="./Screenshots/UI1.jpg" alt="Screenshots" width="200">](./Screenshots/UI1.jpg) [<img src="./Screenshots/UI2.jpg" alt="Screenshots" width="200">](./Screenshots/UI2.jpg)
 
 Datenbank für export (nach Loggout): "\WTF\Account\\%LOGIN%\SavedVariables\RaidSetup.lua"
 
